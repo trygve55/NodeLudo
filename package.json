@@ -1,0 +1,15 @@
+{
+	"name": "NodeLudo",
+	"version": "0.0.1",
+	"dependencies": {
+		"body-parser": "^1.18.2",
+		"ejs": "^2.5.7",
+		"express": "^4.16.1",
+		"jquery": "^3.2.1",
+		"jsonwebtoken": "^8.1.0",
+		"net": "^1.0.2",
+		"package.json": "^2.0.1",
+		"path": "^0.12.7",
+		"socket.io": "^2.0.4"
+	}
+}

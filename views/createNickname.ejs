@@ -1,0 +1,29 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script type="text/javascript" src="createNickname.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="game.css"/>
+</head>
+<body>
+<!-- <img src="https://tihlde.org/assets/2014/02/1911034_10152187302837052_1812648138_o.jpg" style="width: 100vw; height: 20vw;"> -->
+<div class="row">
+	<div class="col-xs-6 col-xs-offset-3" >
+		<div class="panel panel-default" >
+			<div class="panel-heading"><b>Register nickname</b></div>
+			<div class="panel-body">
+				<form id="form">
+					<div class="form-group">
+						<label for="playerName">Nickname:</label>
+						<input type="text" class="form-control" id="playerName" name="playerName">
+					</div>
+					<button id="createNickname" type="submit" class="btn btn-default" style="float: right" disabled="true">Next</button>
+				</form>
+				<text id="nicknameError" style="color:red; font-weight: bold;"></text>
+			</div>
+		</div>
+	</div>
+</div>
+</body>

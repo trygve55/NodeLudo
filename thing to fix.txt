@@ -1,0 +1,17 @@
+velge å flytte inn eller nye på frifeltet
+
+gi opp
+
+gå til lobby
+
+knockout reswet distance
+
+is spectaticg flag
+
+winners on ongooing games
+
+lobby ilde timeout
+
+ready button lobby
+
+animate dice til server response
