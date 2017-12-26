@@ -21,6 +21,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
 var games = [];
+gameJS.setSocket(io);
+gameJS.setPlayerAuth(playerAuth);
+
+console.log(io);
 
 app.get('/rest/game', function (req, res) {
 	res.json(games[req.query.gameid]);
@@ -60,7 +64,7 @@ app.get('/rest/lobby', function (req, res) {
 app.post('/rest/lobby', function (req, res) {
 	if (req.body.action == "startGame") {
 		var readyPlayers = playerAuth.getReadyPlayers()
-		if (readyPlayers.length)startGame(readyPlayers);
+		if (readyPlayers.length)startGame(readyPlayers, 30000);
 	} else if (req.body.action == "ready") {
 		playerAuth.setReady(req.decoded.playerId, true);
 		
@@ -72,10 +76,12 @@ app.post('/rest/lobby', function (req, res) {
 				for (var i = 0;i < 4;i++) {
 					playersToGame[i] = readyPlayers[i];
 				}
-				startGame(playersToGame);
+				startGame(playersToGame, 30000);
 				io.emit('lobby', "");
 			}
 		}, 1000);
+	} else if (req.body.action == "spectating") {
+		playerAuth.setSpectating(req.decoded.playerId, true);
 	}
 	io.emit('lobby', "");
 });
@@ -159,12 +165,12 @@ app.post('/rest/playerExists', function (req, res) {
 	}
 });
 
-function startGame(players) {
+function startGame(players, idleTimeout) {
 
 	if (players.length < 2) return;		
 	
 	console.log("start game");
-	var game = gameJS.createGame(players);
+	var game = gameJS.createGame(players, idleTimeout);
 	
 	for (var i = 0;i < players.length;i++) {
 		playerAuth.setIngame(players[i].playerId, true);
