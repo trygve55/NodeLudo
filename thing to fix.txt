@@ -1,4 +1,4 @@
-velge å flytte inn eller nye på frifeltet
+﻿velge å flytte inn eller nye på frifeltet
 
 gi opp
 
@@ -8,10 +8,14 @@ knockout reswet distance
 
 is spectaticg flag
 
-winners on ongooing games
-
-lobby ilde timeout
-
-ready button lobby
+idle timeout do not recalculate pos
 
 animate dice til server response
+
+show inactive
+
+multiple lobbies
+
+screen scaling
+
+phone scaling

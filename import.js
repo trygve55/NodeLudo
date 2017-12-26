@@ -11,6 +11,8 @@ module.exports = {
 
 		game.isProcessing = true;
 		
+		resetIdleTimeout(game);
+		
 		if (game.waitingForMove) {
 			var chipsOnPos = [];
 			for (var i = 0;i < 4;i++) {
@@ -38,34 +40,15 @@ module.exports = {
 							}
 							
 							if (newDistance == 59) {
-							
 								game.players[game.playerTurn].chips[chipsOnPos[i]].inAtTurn = game.turn;
 								
-								var allIn = true;
-								for (var j = 0; j < 4;j++) {
-									if (game.players[game.playerTurn].chips[j].inAtTurn == -1) allIn = false;
-								}
-								
-								if (allIn) {
-									console.log("player " + game.playerTurn + " won ");
-									game.winners.push(game.playerTurn);
-									if (game.winners.length == game.players.length - 1) {
-										for (var j = 0; j < game.players.length;j++) {
-											var hasWon = false;
-											for (var k = 0;k < game.winners.length;k++) {
-												if (j == game.winners[k]) hasWon = true;
-											}
-											
-											if (!hasWon) game.winners.push(j);
-										}
-										game.status = 2;
-									}
-								}
 							}
 							
 							game.players[game.playerTurn].chips[chipsOnPos[i]].distance = newDistance;
 							game.players[game.playerTurn].chips[chipsOnPos[i]].pos = newPos;
 							knockoutOn(game, newPos);
+							
+							checkWin(game);
 						}
 						
 					}
@@ -76,8 +59,6 @@ module.exports = {
 					game.posiblePos.length = 0; 
 					
 					returnValue = 1;
-					
-					
 				}
 				
 				if (game.lastDice != 6) {
@@ -109,6 +90,8 @@ module.exports = {
 			returnValue = 1;
 		}
 		
+		checkWin(game);
+		
 		game.isProcessing = false;
 		
 		if (game.status == 2) returnValue = 2;
@@ -116,7 +99,7 @@ module.exports = {
 		return returnValue;
 	},
 	
-	createGame: function(players) {
+	createGame: function(players, idleTimeout) {
 		if (players.length < 2) return;
 		
 		var game = {}
@@ -134,6 +117,8 @@ module.exports = {
 		game.players = [];
 		game.lastMoveTime;
 		game.isProcessing = false;
+		game.idleTimeout = idleTimeout;
+		console.log(idleTimeout);
 		
 		for (var i = 0; i < players.length;i++) {
 			game.players[i] = {};
@@ -141,6 +126,7 @@ module.exports = {
 			game.players[i].playerName = players[i].playerName;
 			game.players[i].chips = [];
 			game.players[i].status = 0;
+			game.players[i].turnsIdle = 0;
 			for (var j = 0; j < 4;j++) {
 				game.players[i].chips[j] = {};
 				game.players[i].chips[j].pos = j+i*4;
@@ -149,14 +135,82 @@ module.exports = {
 			}
 		};
 		
+		setIdleTimeout(game);
+		
 		gameIdIncrement++;
+		
 		return game;
+	},
+	setSocket: function (socket) {
+		io = socket;
+	},
+	setPlayerAuth: function (pa) {
+		playerAuth = pa;
 	}
-	
 };
 
+var io, playerAuth;
 var gameIdIncrement = 0;
 
+var gameTimeout = [];
+
+function checkWin(game) {
+								
+	var allIn = true;
+	for (var j = 0; j < 4;j++) {
+		if (game.players[game.playerTurn].chips[j].inAtTurn == -1) allIn = false;
+	}
+	
+	if (allIn && game.players[game.playerTurn].status == 0) {
+		console.log("player " + game.playerTurn + " won ");
+		console.log("add 1");
+		game.players[game.playerTurn].status = 2;
+		game.winners.push(game.playerTurn);
+	}
+	
+	var inactivePlayers = [];
+	for (var j = 0;j < game.players.length;j++) if (game.players[j].status == 1) inactivePlayers.push(j);
+	
+	if (game.winners.length + inactivePlayers.length == game.players.length - 1) {
+		for (var j = 0; j < game.players.length;j++) {
+			var hasWon = false;
+			for (var k = 0;k < game.winners.length;k++) {
+				if (j == game.winners[k]) hasWon = true;
+			}
+			
+			if (!hasWon && game.players[j].status != 1) {
+				console.log("add 2");	
+				game.players[game.playerTurn].status = 2;
+				game.winners.push(j);
+			}
+		}
+		game.status = 2;
+	}
+}
+
+function resetIdleTimeout (game) {
+	
+	if (gameTimeout[game.gameId]) clearTimeout(gameTimeout[game.gameId]);
+	game.players[game.playerTurn].turnsIdle = 0;
+	
+	setIdleTimeout(game, playerAuth);
+}
+
+function setIdleTimeout (game) {
+	
+	gameTimeout[game.gameId] = setTimeout(function () {
+		game.players[game.playerTurn].turnsIdle++;
+		if (game.players[game.playerTurn].turnsIdle == 4) {
+			game.players[game.playerTurn].status = 1;
+			playerAuth.setIngame(game.players[game.playerTurn].playerId, false);
+		}
+		nextPlayer(game);
+		game.waitingForMove = false;
+		updatePosible(game);
+		io.emit("update", "" + game.gameId);
+		resetIdleTimeout(game);
+	}, game.idleTimeout);
+}
 
 function knockoutOn(game, pos) {
 	for (var i = 0;i < game.players.length;i++) {
