@@ -206,7 +206,7 @@ function setIdleTimeout (game) {
 		}
 		nextPlayer(game);
 		game.waitingForMove = false;
-		updatePosible(game);
+		//updatePosible(game);
 		game.posiblePos = [92];
 		io.emit("update", "" + game.gameId);
 		resetIdleTimeout(game);
