@@ -66,7 +66,7 @@ function updateLobby() {
 						for (var j = 0;j < resultData[i].winners.length;j++) string += (j+1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].players.length - 1 == j) ? "" : ", ");
 					}
 					jQuery('<button/>', {
-						href: "/game?token="+ window.sessionStorage.token + "&gameid=" + resultData[i].gameId,
+						href: "/game?gameid=" + resultData[i].gameId,
 						rel: 'internal',
 						class: 'well',
 						text: string,

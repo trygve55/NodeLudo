@@ -30,6 +30,7 @@ function updateGame() {
 		
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
+			if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 			game = resultData;
 			draw();
 		},
@@ -208,11 +209,26 @@ function autoPlay() {
 	}, 80);
 }
 
+function validateToken(next) {
+	jQuery.ajax({
+		url: "/rest/login/?token="+ localStorage.token,
+		type: "GET",
+		
+		contentType: 'application/json; charset=utf-8',
+		success: function(resultData) {
+			next(resultData.valid);
+		},
+		timeout: 120000,
+	});
+}
+
 $(document).ready(function() {
 	
+	validateToken(function(valid) {
+		if (!valid) window.location.href = "/";
+	});
+	
 	var size = (($(window).width() < $(window).height()) ? $(window).width() : $(window).height());
-	//$('.grid').css({'height':size +'px'});
-	//$('.grid').css({'width':size +'px'});
 	
 	$( window ).resize(function()  {
 		var size = $('.grid').width();
@@ -259,6 +275,7 @@ $(document).ready(function() {
 			}
 		});
 	}
+
 	
 	draw();
 	

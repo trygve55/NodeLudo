@@ -45,6 +45,19 @@ function submit() {
 	});
 }
 
+function validateToken(next) {
+	jQuery.ajax({
+		url: "/rest/login/?token="+ localStorage.token,
+		type: "GET",
+		
+		contentType: 'application/json; charset=utf-8',
+		success: function(resultData) {
+			next(resultData.valid);
+		},
+		timeout: 120000,
+	});
+}
+
 $(document).ready(function() {
 	$("#playerName").on("change keyup", function() {
 		validate();
@@ -53,5 +66,9 @@ $(document).ready(function() {
 	$("#form").submit(function () {
 		event.preventDefault();
 		submit();
+	});
+	
+	validateToken(function(valid) {
+		if (valid) window.location.href = "/lobby";
 	});
 });

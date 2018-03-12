@@ -157,6 +157,12 @@ app.post('/rest/playerExists', function (req, res) {
 	}
 });
 
+app.get('/rest/login', function (req, res) {	
+	playerAuth.auth(req, res, function() {
+		res.json({'valid' : true})
+	});
+});
+
 function startGame(players, idleTimeout) {
 
 	if (players.length < 2) return;		
