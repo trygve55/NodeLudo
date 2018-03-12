@@ -21,7 +21,7 @@ socket.on('gamestop', function(msg){
 });
 
 		
-var drawedAt = [], prevPossible = [], prevPossibleNext = [];
+var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGame() {
 	jQuery.ajax({
@@ -134,16 +134,45 @@ function draw() {
 		$("#winnersText").html(winnerText);
 	}
 	
+	chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+	
 	for (var i = 0; i < game.players.length; i++) {	
 		for (var j = 0; j < 4; j++) {
-			var numOnPos = 0;
+			var numOnPos = 0, pos = game.players[i].chips[j].pos;
 			for (var k = 0; k < 4; k++) {
-				if (pos = game.players[i].chips[k].pos == game.players[i].chips[j].pos) numOnPos += 1;
+				if (game.players[i].chips[k].pos == game.players[i].chips[j].pos) numOnPos += 1;
 			}
-			$("#pos-"+game.players[i].chips[j].pos).html(getChipSVG(numOnPos, chipColors[i]));
+			if (pos == 16 || pos == 29 || pos == 42 || pos == 55) {
+				chipsOnColor[i][(pos - 16)/13] = numOnPos;
+			} else {
+				$("#pos-" + game.players[i].chips[j].pos).html(getChipSVG(numOnPos, chipColors[i]));
+				drawedAt.push(game.players[i].chips[j].pos);
+			}
+		}
+	}
+	
+	drawMultiStackUpdate();
+}
+
+function drawMultiStackUpdate() {	
+	for (var i = 0; i < 4; i++) {
+		
+		var playersOnPos = 0, players = [];
+		for (var j = 0; j < game.players.length; j++){
+			if (chipsOnColor[j][i]) {
+				playersOnPos++;
+				players.push(j);
+			}
+		}
+		if (playersOnPos > 0) {
+	
+			$("#pos-"+ (16 + 13 * i)).html(getChipSVG(
+					chipsOnColor[players[multipleStackDrawCounter % playersOnPos]][i], 
+					chipColors[players[multipleStackDrawCounter % playersOnPos]]));
 			drawedAt.push(game.players[i].chips[j].pos);
 		}
 	}
+	multipleStackDrawCounter++;
 }
 
 function drawDice(num) {
@@ -239,7 +268,6 @@ $(document).ready(function() {
 			$('.grid').css({'width': 'auto'});
 		}
 		$('.grid').css({'height': size +'px'});
-		console.log(size + " " + document.body.clientHeight);
 	});
 	
 	$( window ).trigger("resize");
@@ -278,6 +306,10 @@ $(document).ready(function() {
 
 	
 	draw();
+	//drawMultiStackUpdate()
+	setInterval(function() {
+		drawMultiStackUpdate();
+	}, 1000);
 	
 	$("#nextPlayer").click(function() {
 		for (var i = 0;i < 30; i++) ludoAI();
