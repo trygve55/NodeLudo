@@ -21,7 +21,7 @@ socket.on('gamestop', function(msg){
 });
 
 		
-var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, timeLeftTurn = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGame() {
 	jQuery.ajax({
@@ -32,6 +32,7 @@ function updateGame() {
 		success: function(resultData) {
 			if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 			game = resultData;
+			timeLeftTurn = 30;
 			draw();
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
@@ -309,6 +310,9 @@ $(document).ready(function() {
 	//drawMultiStackUpdate()
 	setInterval(function() {
 		drawMultiStackUpdate();
+		if (timeLeftTurn > 0) timeLeftTurn--;
+		$("#timeLeftText").text(timeLeftTurn + " s");
+		
 	}, 1000);
 	
 	$("#nextPlayer").click(function() {
