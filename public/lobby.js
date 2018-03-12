@@ -8,20 +8,22 @@ socket.on('gamestart', function(msg){
 	var args = msg.split(" ");
 	
 	var joinGame = false;
-	for (var i = 1;i < msg.length;i++) if (parseInt(msg[i]) == window.sessionStorage.playerId) joinGame = true;
+	for (var i = 1;i < msg.length;i++) if (parseInt(msg[i]) == localStorage.playerId) joinGame = true;
 	
 	if (joinGame) {
-		window.location.href = "game?token="+ window.sessionStorage.token + "&gameid=" + args[0];
+		window.location.href = "game?gameid=" + args[0];
 	}
 });
 
 function updateLobby() {
 	jQuery.ajax({
-		url: "/rest/lobby?token="+ window.sessionStorage.token,
+		url: "/rest/lobby?token="+ localStorage.token,
 		type: "GET",
 
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
+			if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
+			
 			$("#players").empty();
 			$("#readyPlayers").empty();
 			for (var i = 0; i < resultData.players.length;i++) {
@@ -38,7 +40,7 @@ function updateLobby() {
 	});
 	
 	jQuery.ajax({
-		url: "/rest/games?token="+ window.sessionStorage.token,
+		url: "/rest/games?token="+ localStorage.token,
 		type: "GET",
 
 		contentType: 'application/json; charset=utf-8',
@@ -88,7 +90,7 @@ $(document).ready(function() {
 	
 	$("#startGame").click(function () {
 		jQuery.ajax({
-			url: "/rest/lobby?token="+ window.sessionStorage.token,
+			url: "/rest/lobby?token="+ localStorage.token,
 			type: "POST",
 			data: JSON.stringify({action: "startGame"}),
 			contentType: 'application/json; charset=utf-8',
@@ -98,7 +100,7 @@ $(document).ready(function() {
 	
 	$("#readyBtn").click(function () {		
 		jQuery.ajax({
-			url: "/rest/lobby?token="+ window.sessionStorage.token,
+			url: "/rest/lobby?token="+ localStorage.token,
 			type: "POST",
 			data: JSON.stringify({action: "ready"}),
 			contentType: 'application/json; charset=utf-8',

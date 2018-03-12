@@ -33,9 +33,9 @@ function submit() {
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
 			if (resultData.success) {
-				window.sessionStorage.token = resultData.token;
-				window.sessionStorage.playerId = resultData.playerId;
-				window.location.href = "lobby?token="+ window.sessionStorage.token;
+				localStorage.token = resultData.token;
+				localStorage.playerId = resultData.playerId;
+				window.location.href = "lobby";
 			}
 		},
 		error : function(jqXHR, textStatus, errorThrown) {

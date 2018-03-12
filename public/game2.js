@@ -15,7 +15,7 @@ socket.on('gamestop', function(msg){
 	console.log("game end");
 	if (msg == getUrlVars().gameid) {
 		setTimeout(function() {
-			window.location.href = "/lobby?token="+ window.sessionStorage.token;
+			window.location.href = "/lobby";
 		}, 6000);	
 	}
 });
@@ -25,7 +25,7 @@ var drawedAt = [], prevPossible = [], prevPossibleNext = [];
 
 function updateGame() {
 	jQuery.ajax({
-		url: "/rest/game/?token="+ window.sessionStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: "/rest/game/?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "GET",
 		
 		contentType: 'application/json; charset=utf-8',
@@ -58,7 +58,7 @@ function gameLogic(pos, chipsToMove) {
 	if (game.status != 1) return;
 
 	jQuery.ajax({
-		url: "/rest/game?token="+ window.sessionStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "POST",
 		data: JSON.stringify({
 			'pos': pos,
@@ -186,7 +186,7 @@ function removePopover() {
 }
 
 function isTurn() {
-	return (window.sessionStorage.playerId == game.players[game.playerTurn].playerId);
+	return (localStorage.playerId == game.players[game.playerTurn].playerId);
 }
 
 function getUrlVars()
@@ -211,8 +211,22 @@ function autoPlay() {
 $(document).ready(function() {
 	
 	var size = (($(window).width() < $(window).height()) ? $(window).width() : $(window).height());
-	$('.grid').css({'height':size +'px'});
-	$('.grid').css({'width':size +'px'});
+	//$('.grid').css({'height':size +'px'});
+	//$('.grid').css({'width':size +'px'});
+	
+	$( window ).resize(function()  {
+		var size = $('.grid').width();
+		if (size > document.body.clientHeight - 10) {
+			size = document.body.clientHeight - 10;
+			$('.grid').css({'width': size +'px'});
+		} else {
+			$('.grid').css({'width': 'auto'});
+		}
+		$('.grid').css({'height': size +'px'});
+		console.log(size + " " + document.body.clientHeight);
+	});
+	
+	$( window ).trigger("resize");
 	
 	for (var i = 0; i < 100; i++) {
 		$("#pos-"+i).data("pos", i);

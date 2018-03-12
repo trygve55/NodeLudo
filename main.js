@@ -34,16 +34,8 @@ app.get('/', function (req, res) {
 	res.render('createNickname');
 });
 
-app.use('/lobby', function (req, res, next) {
-	playerAuth.auth(req, res, next);
-});
-
 app.get('/lobby', function (req, res, next) {	
 	res.render('lobby');
-});
-
-app.use('/game', function (req, res, next) {
-	playerAuth.auth(req, res, next);
 });
 
 app.get('/game', function (req, res) {

@@ -48,11 +48,15 @@ function auth(req, res, next) {
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {      
 			if (err) {
-				res.redirect('/');
+				//res.redirect('/');
 				// res.status(403).send({ 
 					// success: false, 
 					// message: 'Failed to authenticate token.' 
 				// });
+				res.status(200).send({ 
+					redirect: '/'
+				});
+				
 			} else {
 				req.decoded = decoded;    
 				next();
@@ -60,11 +64,10 @@ function auth(req, res, next) {
 		});
 	} else  {
 		
-		res.redirect('/');
-		// res.status(403).send({ 
-			// success: false, 
-			// message: 'No token provided.' 
-		// });
+		//res.redirect('/');
+		res.status(200).send({ 
+			redirect: '/'
+		});
 		
 	}
 }

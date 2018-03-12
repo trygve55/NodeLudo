@@ -114,12 +114,14 @@
 .grid {
     /* width: 78.5vw; */
     /* height: 78.5vw; */
-	margin: 0cm 0cm 0cm 0cm; */
+	/*margin: 10% 10% 10% 10%; */
+	margin-right: 0px;
 }
 .board {
 	background: #000;
-    width: 50vw;
-    height: 50vw;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
 }
 .contain-over {
 	width: 100%;
@@ -137,3 +139,4 @@
 .container-triangle {
   position: relative;
 }
+
