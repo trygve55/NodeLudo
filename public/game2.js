@@ -21,7 +21,7 @@ socket.on('gamestop', function(msg){
 });
 
 		
-var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, timeLeftTurn = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGame() {
 	jQuery.ajax({
@@ -32,7 +32,6 @@ function updateGame() {
 		success: function(resultData) {
 			if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 			game = resultData;
-			timeLeftTurn = 30;
 			draw();
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
@@ -49,6 +48,13 @@ function getChipSVG(chips, color) {
 	chip[2] = "<svg width='100%' height='100%' viewBox='0 0 250 250'> <circle cx='125' cy='155' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='135' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='115' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='95' r='80' stroke='black' stroke-width='6' fill=? /></svg>";
 	chip[3] = "<svg width='100%' height='100%' viewBox='0 0 250 250'> <circle cx='125' cy='167' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='147' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='127' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='107' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='87' r='80' stroke='black' stroke-width='6' fill=? /> </svg>";
 	return chip[chips-1].replace(/[?]/g, color);
+}
+
+function getTimeLeftSVG() {
+	var mult = game.timeLeftTurn*1000/game.idleTimeout;
+	return "<svg viewBox='0 0 500 100'>" + 
+			"<polygon points='0,0 0,100 " + mult*500 + ",100 " + mult*500 + ",0' style='fill:black;stroke:black;stroke-width:2' />" + 
+			"</svg>"
 }
 
 function dice() {
@@ -170,7 +176,7 @@ function drawMultiStackUpdate() {
 			$("#pos-"+ (16 + 13 * i)).html(getChipSVG(
 					chipsOnColor[players[multipleStackDrawCounter % playersOnPos]][i], 
 					chipColors[players[multipleStackDrawCounter % playersOnPos]]));
-			drawedAt.push(game.players[i].chips[j].pos);
+			drawedAt.push(16 + 13 * i);
 		}
 	}
 	multipleStackDrawCounter++;
@@ -310,10 +316,16 @@ $(document).ready(function() {
 	//drawMultiStackUpdate()
 	setInterval(function() {
 		drawMultiStackUpdate();
-		if (timeLeftTurn > 0) timeLeftTurn--;
-		$("#timeLeftText").text(timeLeftTurn + " s");
+		//$("#timeLeftText").text(game.timeLeftTurn + " s");
+	
 		
 	}, 1000);
+	
+	setInterval(function() {
+		$("#timeLeftText").html(getTimeLeftSVG());
+		if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
+		if (game.status != 1) game.timeLeftTurn = 0;
+	}, 50);
 	
 	$("#nextPlayer").click(function() {
 		for (var i = 0;i < 30; i++) ludoAI();

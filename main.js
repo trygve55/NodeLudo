@@ -27,6 +27,9 @@ gameJS.setPlayerAuth(playerAuth);
 console.log(io);
 
 app.get('/rest/game', function (req, res) {
+	games[req.query.gameid].timeLeftTurn = (
+		(games[req.query.gameid].status == 1) ? 
+		((games[req.query.gameid].idleTimeout - ((new Date()).getTime() - games[req.query.gameid].lastMoveTime.getTime()))/1000) : 0);
 	res.json(games[req.query.gameid]);
 });
 

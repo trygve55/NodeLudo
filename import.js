@@ -115,7 +115,8 @@ module.exports = {
 		game.winners = [];
 		game.status = 1;
 		game.players = [];
-		game.lastMoveTime;
+		game.lastMoveTime = new Date();
+		game.timeLeftTurn;
 		game.isProcessing = false;
 		game.idleTimeout = idleTimeout;
 		console.log(idleTimeout);
@@ -192,7 +193,7 @@ function resetIdleTimeout (game) {
 	
 	if (gameTimeout[game.gameId]) clearTimeout(gameTimeout[game.gameId]);
 	game.players[game.playerTurn].turnsIdle = 0;
-	
+	game.lastMoveTime = new Date();
 	setIdleTimeout(game, playerAuth);
 }
 
