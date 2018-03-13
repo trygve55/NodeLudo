@@ -99,7 +99,7 @@ module.exports = {
 		return returnValue;
 	},
 	
-	createGame: function(players, idleTimeout) {
+	createGame: function(players, gameSettings) {
 		if (players.length < 2) return;
 		
 		var game = {}
@@ -118,8 +118,8 @@ module.exports = {
 		game.lastMoveTime = new Date();
 		game.timeLeftTurn;
 		game.isProcessing = false;
-		game.idleTimeout = idleTimeout;
-		console.log(idleTimeout);
+		game.idleTimeout = gameSettings.idleTimeout;
+		game.idleKickTurns = gameSettings.idleKickTurns;
 		
 		for (var i = 0; i < players.length;i++) {
 			game.players[i] = {};
@@ -163,8 +163,7 @@ function checkWin(game) {
 	}
 	
 	if (allIn && game.players[game.playerTurn].status == 0) {
-		console.log("player " + game.playerTurn + " won ");
-		console.log("add 1");
+		console.log("Game " + ": Player " + game.players[game.playerTurn].playerName + " won. ");
 		game.players[game.playerTurn].status = 2;
 		game.winners.push(game.playerTurn);
 	}
@@ -179,8 +178,7 @@ function checkWin(game) {
 				if (j == game.winners[k]) hasWon = true;
 			}
 			
-			if (!hasWon && game.players[j].status != 1) {
-				console.log("add 2");	
+			if (!hasWon && game.players[j].status != 1) {	
 				game.players[game.playerTurn].status = 2;
 				game.winners.push(j);
 			}
@@ -189,10 +187,10 @@ function checkWin(game) {
 	}
 }
 
-function resetIdleTimeout (game) {
+function resetIdleTimeout (game, idle) {
 	
 	if (gameTimeout[game.gameId]) clearTimeout(gameTimeout[game.gameId]);
-	game.players[game.playerTurn].turnsIdle = 0;
+	if (!idle) game.players[game.playerTurn].turnsIdle = 0;
 	game.lastMoveTime = new Date();
 	setIdleTimeout(game, playerAuth);
 }
@@ -201,16 +199,17 @@ function setIdleTimeout (game) {
 	
 	gameTimeout[game.gameId] = setTimeout(function () {
 		game.players[game.playerTurn].turnsIdle++;
-		if (game.players[game.playerTurn].turnsIdle == 4) {
+		if (game.players[game.playerTurn].turnsIdle === game.idleKickTurns) {
 			game.players[game.playerTurn].status = 1;
 			playerAuth.setIngame(game.players[game.playerTurn].playerId, false);
+			checkWin(game);
 		}
 		nextPlayer(game);
 		game.waitingForMove = false;
 		//updatePosible(game);
 		game.posiblePos = [92];
 		io.emit("update", "" + game.gameId);
-		resetIdleTimeout(game);
+		resetIdleTimeout(game, true);
 	}, game.idleTimeout);
 }
 
