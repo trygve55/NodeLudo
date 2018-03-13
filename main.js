@@ -1,8 +1,9 @@
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
-var gameJS = require('./import');
-var playerAuth = require('./playersAuth');
+var express = require('express'),
+	path = require('path'),
+	bodyParser = require('body-parser'),
+	gameJS = require('./import'),
+	playerAuth = require('./playersAuth'),
+	validator = require('validator');
 
 var app = require('express')()
   , server = require('http').createServer(app)
@@ -25,13 +26,13 @@ gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
 var defaultGameSettings = {
-	idleTimeout: 20000,
+	idleTimeout: 2000,
 	idleKickTurns: 5
 }
 
 app.get('/rest/game', function (req, res) {
 	games[req.query.gameid].timeLeftTurn = (
-		(games[req.query.gameid].status && games[req.query.gameid].status == 1) ? 
+		(games[req.query.gameid] && games[req.query.gameid].status == 1) ? 
 		((games[req.query.gameid].idleTimeout - ((new Date()).getTime() - games[req.query.gameid].lastMoveTime.getTime()))/1000) : 0);
 	res.json(games[req.query.gameid]);
 });
@@ -98,7 +99,6 @@ app.post('/rest/game', function (req, res) {
 			var players = games[req.query.gameid].players;
 			for (var i = 0;i < players.length;i++) playerAuth.setIngame(players[i].playerId, false);
 			io.emit('update', "" + games[req.query.gameid].gameId);
-			io.emit('gamestop', "" + games[req.query.gameid].gameId);
 			break;
 		default:
 			break;
@@ -116,6 +116,8 @@ app.get('/rest/games', function (req, res) {
 });
 
 app.post('/rest/regPlayer', function (req, res) {
+	
+	req.body.playerName = validator.escape(req.body.playerName);
 	
 	if (req.body.playerName == null) 
 		return res.json({ success: false, message: 'No nickname given.' });

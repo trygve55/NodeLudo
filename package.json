@@ -10,6 +10,7 @@
 		"net": "^1.0.2",
 		"package.json": "^2.0.1",
 		"path": "^0.12.7",
-		"socket.io": "^2.0.4"
+		"socket.io": "^2.0.4",
+		"validator": "^9.4.1"
 	}
 }

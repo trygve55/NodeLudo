@@ -184,6 +184,7 @@ function checkWin(game) {
 			}
 		}
 		game.status = 2;
+		io.emit('gamestop', "" + game.gameId);
 	}
 }
 
