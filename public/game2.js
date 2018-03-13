@@ -6,7 +6,6 @@ updateGame();
 var socket = io(window.location.host);
 
 socket.on('update', function(msg){
-	console.log(msg);
 	if (msg == getUrlVars().gameid) updateGame();
 });
 
@@ -171,7 +170,8 @@ function drawMultiStackUpdate() {
 				players.push(j);
 			}
 		}
-		if (playersOnPos > 0) {
+		
+		if (playersOnPos > 0 && !$("#pos-"+ (16 + 13 * i)).has("div").length) {
 	
 			$("#pos-"+ (16 + 13 * i)).html(getChipSVG(
 					chipsOnColor[players[multipleStackDrawCounter % playersOnPos]][i], 
