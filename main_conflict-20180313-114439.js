@@ -1,9 +1,8 @@
-var express = require('express'),
-	path = require('path'),
-	bodyParser = require('body-parser'),
-	gameJS = require('./import'),
-	playerAuth = require('./playersAuth'),
-	validator = require('validator');
+var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
+var gameJS = require('./import');
+var playerAuth = require('./playersAuth');
 
 var app = require('express')()
   , server = require('http').createServer(app)
@@ -25,14 +24,11 @@ var games = [];
 gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
-var defaultGameSettings = {
-	idleTimeout: 2000,
-	idleKickTurns: 5
-}
+console.log(io);
 
 app.get('/rest/game', function (req, res) {
 	games[req.query.gameid].timeLeftTurn = (
-		(games[req.query.gameid] && games[req.query.gameid].status == 1) ? 
+		(games[req.query.gameid].status == 1) ? 
 		((games[req.query.gameid].idleTimeout - ((new Date()).getTime() - games[req.query.gameid].lastMoveTime.getTime()))/1000) : 0);
 	res.json(games[req.query.gameid]);
 });
@@ -63,7 +59,7 @@ app.get('/rest/lobby', function (req, res) {
 app.post('/rest/lobby', function (req, res) {
 	if (req.body.action == "startGame") {
 		var readyPlayers = playerAuth.getReadyPlayers()
-		if (readyPlayers.length)startGame(readyPlayers, defaultGameSettings);
+		if (readyPlayers.length)startGame(readyPlayers, 30000);
 	} else if (req.body.action == "ready") {
 		playerAuth.setReady(req.decoded.playerId, true);
 		
@@ -75,7 +71,7 @@ app.post('/rest/lobby', function (req, res) {
 				for (var i = 0;i < 4;i++) {
 					playersToGame[i] = readyPlayers[i];
 				}
-				startGame(playersToGame, defaultGameSettings);
+				startGame(playersToGame, 30000);
 				io.emit('lobby', "");
 			}
 		}, 1000);
@@ -99,6 +95,7 @@ app.post('/rest/game', function (req, res) {
 			var players = games[req.query.gameid].players;
 			for (var i = 0;i < players.length;i++) playerAuth.setIngame(players[i].playerId, false);
 			io.emit('update', "" + games[req.query.gameid].gameId);
+			io.emit('gamestop', "" + games[req.query.gameid].gameId);
 			break;
 		default:
 			break;
@@ -117,27 +114,25 @@ app.get('/rest/games', function (req, res) {
 
 app.post('/rest/regPlayer', function (req, res) {
 	
-	req.body.playerName = validator.escape(req.body.playerName);
-	
-	if (req.body.playerName == null) 
-		return res.json({ success: false, message: 'No nickname given.' });
-	if (playerAuth.playerExists(req.body.playerName) || req.body.playerName == null) 
-		return res.json({ success: false, message: 'Nickname is already in use.' });
-	if (req.body.playerName.length < 3 || req.body.playerName.length > 16) 
-		return res.json({ success: false, message: 'Nickname is to long or to short.' });
-	
-	var token = playerAuth.addPlayer(req.body.playerName);
+	if (req.body.playerName == null) {
+		res.json({ success: false, message: 'No nickname given.' });
+	} else if (playerAuth.playerExists(req.body.playerName) || req.body.playerName == null) {
+		res.json({ success: false, message: 'Nickname is already in use.' });
+	} else if (req.body.playerName.length < 3 || req.body.playerName.length > 16) {
+		res.json({ success: false, message: 'Nickname is to long or to short.' });
+	} else {
+		
+		var token = playerAuth.addPlayer(req.body.playerName);
 
-	res.json({
-	  success: true,
-	  playerId: playerAuth.getPlayerId(req.body.playerName),
-	  token: token
-	});
-	
-	console.log("Player " + req.body.playerName + " joined lobby.")
-	
-	io.emit('lobby', "");
-
+		res.json({
+          success: true,
+          message: 'Enjoy your token!',
+		  playerId: playerAuth.getPlayerId(req.body.playerName),
+          token: token
+        });
+		
+		io.emit('lobby', "");
+	}	
 });
 
 app.use('/rest/players', function (req, res, next) {
@@ -175,16 +170,7 @@ function startGame(players, idleTimeout) {
 
 	if (players.length < 2) return;		
 	
-	var newPlayers = [];
-	
-	while (players.length > 0) {
-		var index = Math.floor(Math.random() * (players.length));
-		newPlayers.push(players[index]);
-		players.splice(index, 1);
-	}
-	
-	players = newPlayers;
-	
+	console.log("start game");
 	var game = gameJS.createGame(players, idleTimeout);
 	
 	for (var i = 0;i < players.length;i++) {
@@ -192,8 +178,6 @@ function startGame(players, idleTimeout) {
 	}
 	
 	games.push(game);
-	
-	console.log("Starting game id: " + game.gameId);
 	
 	var string = game.gameId;
 	for (var i = 0;i < players.length;i++) string += " " + players[i].playerId;
