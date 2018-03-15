@@ -26,7 +26,7 @@ gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
 var defaultGameSettings = {
-	idleTimeout: 2000,
+	idleTimeout: 20000,
 	idleKickTurns: 5
 }
 

@@ -4,8 +4,6 @@ gi opp
 
 gå til lobby
 
-knockout reswet distance
-
 is spectaticg flag
 
 idle timeout do not recalculate pos
