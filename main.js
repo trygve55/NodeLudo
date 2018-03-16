@@ -1,7 +1,7 @@
 var express = require('express'),
 	path = require('path'),
 	bodyParser = require('body-parser'),
-	gameJS = require('./import2'),
+	gameJS = require('./import3'),
 	playerAuth = require('./playersAuth'),
 	validator = require('validator');
 
@@ -47,7 +47,7 @@ app.get('/lobby', function (req, res, next) {
 });
 
 app.get('/game', function (req, res) {
-	res.render('game2');
+	res.render('game3');
 });
 
 app.use('/rest/lobby', function (req, res, next) {
