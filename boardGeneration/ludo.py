@@ -7,13 +7,13 @@ y = height/2
 
 size = 400
 players = 8
-depth = 6
+depth = 7
 blockSize = 0.7
-outFactor = 0
 offsetFactor = 1 #0.926
 offset = -0.16
+outFactor = 4.8875
 
-colors = [[255,0,0],[0,255,0],[200,200,0],[0,0,80],[150,0,200],[50,0,200],[200,100,0],[0,0,255]]
+colors = [[255,0,0],[0,255,0],[250,230,0],[255,0,170],[150,0,200],[0,200,200],[250,130,0],[0,0,255]]
 strokeWidth = str(4)
 
 print('<body>\n\t<svg viewBox="0 0 ' + str(width) + ' ' + str(height) + '">')
@@ -49,6 +49,85 @@ for i in range(players):
     print('\t\t<polygon points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' +
           str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2]) + ')"></polygon>')
 
+    for i in range(players):
+        points = ""
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(4)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.5))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(4)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.5))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(4)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.5))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(4)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.5))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(7)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.5))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(7)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.5))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(7)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.5))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(7)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.5))
+        print('\t\t<polygon points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' + str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2]) + ')"></polygon>')
+        
+        points = ""
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(4.2)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.7))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(4.2)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.7))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(4.2)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.3))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(4.2)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.3))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(6.8)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.3))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(6.8)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.3))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(6.8)) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.7))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(6.8)) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.7))
+        print('\t\t<polygon points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(255,255,255)"></polygon>')
+     
+for j in range(2):
+
+    for i in range(players):
+        points = ""
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.9))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.9))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*2.9))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*2.9))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*2.9))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*2.9))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*1.9))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*1.9))
+        print('\t\t<polygon points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' + str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2]) + ')"></polygon>')
+        
+        points = ""
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*3.1))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*3.1))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.1))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.1))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*4.1))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*4.1))
+        points += " "
+        points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.sin(math.pi/2 + (2*math.pi)*(float(i)/players))*size*(blockSize*3.1))
+        points += ","
+        points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1) - blockSize/2) + math.cos(math.pi/2 + (2*math.pi)*((float(i)/players)))*size*(blockSize*3.1))
+        print('\t\t<polygon points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' + str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2]) + ')"></polygon>')
+
+    outFactor += 1.2
+    
+outFactor = 0.0
 for j in range(depth):
 
     innerMult = 1.09 if outFactor == 0 else 1.5
