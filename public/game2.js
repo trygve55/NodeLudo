@@ -258,6 +258,10 @@ function validateToken(next) {
 	});
 }
 
+function test(string) {
+	console.log(string);
+}
+
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
