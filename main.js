@@ -1,7 +1,7 @@
 var express = require('express'),
 	path = require('path'),
 	bodyParser = require('body-parser'),
-	gameJS = require('./import'),
+	gameJS = require('./import2'),
 	playerAuth = require('./playersAuth'),
 	validator = require('validator');
 
@@ -27,7 +27,8 @@ gameJS.setPlayerAuth(playerAuth);
 
 var defaultGameSettings = {
 	idleTimeout: 20000,
-	idleKickTurns: 5
+	idleKickTurns: 5,
+    boardSize: 8
 }
 
 app.get('/rest/game', function (req, res) {

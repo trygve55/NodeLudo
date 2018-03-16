@@ -258,14 +258,20 @@ function validateToken(next) {
 	});
 }
 
+function test(string) {
+	console.log(string);
+}
+
 $(document).ready(function() {
 	
+    /*
 	validateToken(function(valid) {
 		if (!valid) window.location.href = "/";
 	});
 	
 	var size = (($(window).width() < $(window).height()) ? $(window).width() : $(window).height());
-	
+	*/
+    
 	$( window ).resize(function()  {
 		var size = $('.grid').width();
 		if (size > document.body.clientHeight - 10) {
@@ -279,10 +285,12 @@ $(document).ready(function() {
 	
 	$( window ).trigger("resize");
 	
-	for (var i = 0; i < 100; i++) {
+	for (var i = 0; i < 170; i++) {
 		$("#pos-"+i).data("pos", i);
 		$("#pos-"+i).click(function() {
 			
+            console.log($(this).data("pos"));
+            /*
 			let chipsOn = 0;
 			for (var i = 0;i < game.posiblePos.length;i++) {
 				if (game.posiblePos[i] == $(this).data("pos")) chipsOn++;
@@ -307,7 +315,7 @@ $(document).ready(function() {
 					trigger: "click",
 					animation:false
 				}).popover('show'); 
-			}
+			}*/
 		});
 	}
 
