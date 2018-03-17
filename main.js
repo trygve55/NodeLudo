@@ -71,9 +71,9 @@ app.post('/rest/lobby', function (req, res) {
 		setTimeout(function () {
 			var readyPlayers = playerAuth.getReadyPlayers();
 			
-			if (readyPlayers.length >= 4) {
+			if (readyPlayers.length >= 8) {
 				var playersToGame = [];
-				for (var i = 0;i < 4;i++) {
+				for (var i = 0;i < 8;i++) {
 					playersToGame[i] = readyPlayers[i];
 				}
 				startGame(playersToGame, defaultGameSettings);

@@ -46,7 +46,7 @@ for i in range(players):
     points += ","
     points += str(y+math.cos((2*math.pi)*(float(i+0.5)/players))*size)
     points += " "
-    print('\t\t<polygon id="pos-' + str(players*(4 + (depth*2+1)) + depth + i - 1) + '"  points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' +
+    print('\t\t<polygon id="pos-' + str(players*4 + i * (depth) + players*(depth*2+1) + depth + 1 - 2) + '"  points="' + points +'"stroke="black" stroke-width="' + strokeWidth +'" fill="rgb(' +
           str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2]) + ')"></polygon>')
 
     for i in range(players):
@@ -181,7 +181,7 @@ for j in range(depth):
         points += str(x+math.sin((2*math.pi)*((float(i)/players)))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1)) + math.sin(-math.pi/2 + (2*math.pi)*(float(i)/players))*size*blockSize/2)
         points += ","
         points += str(y+math.cos((2*math.pi)*(float(i)/players))*size*offsetFactor*(2 + offset + blockSize*(outFactor + 1)) + math.cos(-math.pi/2 + (2*math.pi)*((float(i)/players)))*size*blockSize/2)
-        print('\t\t<polygon id="pos-' + str(players*4 + i * (depth*2+1) + (2 if (j == depth - 1) else players*(depth*2+1) + depth - j - 2)) + '" points="' + points + '"stroke="black" stroke-width="' + strokeWidth + '" fill="rgb(' + ('255,255,255' if j == depth - 1 else
+        print('\t\t<polygon id="pos-' + str(players*4 + (2 + i * (depth*2+1) if (j == depth - 1) else players*(depth*2+1) + depth*i - j + 5)) + '" points="' + points + '"stroke="black" stroke-width="' + strokeWidth + '" fill="rgb(' + ('255,255,255' if j == depth - 1 else
               str(colors[i][0]) + ',' + str(colors[i][1]) + ',' + str(colors[i][2])) + ')"></polygon>')
 
     for i in range(players):

@@ -33,15 +33,15 @@ module.exports = {
 							var newPos = game.players[game.playerTurn].chips[chipsOnPos[i]].pos + game.lastDice;
 							var newDistance = game.players[game.playerTurn].chips[chipsOnPos[i]].distance + game.lastDice
 						
-							if (newPos > 67 && newPos < 74) {
-								newPos += -52;
+							if (newPos > 151 && newPos < 158) {
+								newPos += -120;
 							}
 							
-							if (newDistance > 53) {
-								newPos = 14 + game.playerTurn*6 + newDistance;
+							if (newDistance > 120) {
+								newPos = 32 + game.playerTurn*7 + newDistance;
 							}
 							
-							if (newDistance == 59) {
+							if (newDistance == 126) {
 								game.players[game.playerTurn].chips[chipsOnPos[i]].inAtTurn = game.turn;
 								
 							}
@@ -69,7 +69,7 @@ module.exports = {
 			}
 			
 		
-		} else if ((game.boardSize === 8 && pos == 92) || pos === 166) {
+		} else if ((game.boardSize === 8 && pos == 92) || pos === 208) {
 			updatePosible(game);
 			
 			var allOnStart = true;
@@ -156,7 +156,7 @@ module.exports = {
 var io, playerAuth;
 var gameIdIncrement = 0;
 
-var dicePos = 166
+var dicePos = 208
 
 var gameTimeout = [];
 

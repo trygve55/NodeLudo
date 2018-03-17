@@ -20,7 +20,7 @@ socket.on('gamestop', function(msg){
 });
 
 
-var dicePos = 166
+var dicePos = 208
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
@@ -118,7 +118,7 @@ function draw() {
 		}
 	}
 	
-	chipColors = ['#f22438', '#f7e81d', '#14913e', '#1968ef'];
+	chipColors = ['#f22438', '#f7e81d', '#14913e', '#1968ef', '#d633ff', '#ff9933', '#9900ff', '#5cd6d6'];
 	
 	$("#turn").html(game.turn);
 	$("#throwsLeft").html(game.throwsLeft);
@@ -155,7 +155,7 @@ function draw() {
 			for (var k = 0; k < 4; k++) {
 				if (game.players[i].chips[k].pos == game.players[i].chips[j].pos) numOnPos += 1;
 			}
-			if (pos == 16 || pos == 29 || pos == 42 || pos == 55) {
+			if (false && (pos == 16 || pos == 29 || pos == 42 || pos == 55)) {
 				chipsOnColor[i][(pos - 16)/13] = numOnPos;
 			} else {
 				//$("#pos-" + game.players[i].chips[j].pos).html(getChipSVG(numOnPos, chipColors[i]));
@@ -166,15 +166,29 @@ function draw() {
                 }
                 x /= 4;
                 y /= 4;
-                document.getElementById('board').appendChild(
-                    makeSVG('circle', {cx: x, cy: y+10, r:80, stroke: 'black', 'stroke-width': 4, fill: 'red'})).setAttribute("class", "chip");
-                document.getElementById('board').appendChild(
-                    makeSVG('circle', {cx: x, cy: y-10, r:80, stroke: 'black', 'stroke-width': 4, fill: 'red'})).setAttribute("class", "chip");
+                
+                drawChips(x, y, numOnPos, chipColors[i]);
 			}
 		}
 	}
 	
-	drawMultiStackUpdate();
+	//drawMultiStackUpdate();
+}
+
+function drawChips(x, y, n, color) {
+    
+    var chipSize = 12, radius = 90;
+    
+    if (n > 2) document.getElementById('board').appendChild(
+        makeSVG('circle', {cx: x, cy: y+chipSize*3, r: radius, stroke: 'black', 'stroke-width': 4, fill: color})).setAttribute("class", "chip");
+    document.getElementById('board').appendChild(
+        makeSVG('circle', {cx: x, cy: y+chipSize, r: radius, stroke: 'black', 'stroke-width': 4, fill: color})).setAttribute("class", "chip");
+    document.getElementById('board').appendChild(
+        makeSVG('circle', {cx: x, cy: y-chipSize, r: radius, stroke: 'black', 'stroke-width': 4, fill: color})).setAttribute("class", "chip");
+    if (n > 1) document.getElementById('board').appendChild(
+        makeSVG('circle', {cx: x, cy: y-chipSize*3, r: radius, stroke: 'black', 'stroke-width': 4, fill: color})).setAttribute("class", "chip");
+    if (n > 3)document.getElementById('board').appendChild(
+        makeSVG('circle', {cx: x, cy: y-chipSize*5, r: radius, stroke: 'black', 'stroke-width': 4, fill: color})).setAttribute("class", "chip");
 }
 
 function drawMultiStackUpdate() {	
@@ -299,7 +313,7 @@ $(document).ready(function() {
 	
 	$( window ).trigger("resize");
 	
-	for (var i = 0; i < 170; i++) {
+	for (var i = 0; i < dicePos + 1; i++) {
 		$("#pos-"+i).data("pos", i);
 		$("#pos-"+i).click(function() {
 			
@@ -310,6 +324,7 @@ $(document).ready(function() {
 				if (game.posiblePos[i] == $(this).data("pos")) chipsOn++;
 			}
 			if (chipsOn == 1 || $(this).data("pos") == dicePos) {
+                console.log("sending press");
 				gameLogic($(this).data("pos"), 1);
 				if ($(this).data("pos") == dicePos && !game.waitingForMove &&  isTurn()) animateDice(game.lastDice, 350);
 			}
@@ -337,7 +352,7 @@ $(document).ready(function() {
 	draw();
 	//drawMultiStackUpdate()
 	setInterval(function() {
-		drawMultiStackUpdate();
+		//drawMultiStackUpdate();
 		//$("#timeLeftText").text(game.timeLeftTurn + " s");
 	
 		
@@ -371,5 +386,5 @@ $(document).ready(function() {
 		}
 	});
     
-    console.log($("#pos-5").attr("points"));
+    autoPlay();
 });

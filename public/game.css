@@ -95,6 +95,10 @@
 .white {
 	background-color: white;
 }
+
+.chip {
+    pointer-events: none;
+}
 .possiblePos {
 	-webkit-animation: ANIMATION-POSIBLE 1s infinite;  /* Safari 4+ */
 	-moz-animation: ANIMATION-POSIBLE 1s infinite;  /* Fx 5+ */
