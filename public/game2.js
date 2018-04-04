@@ -6,7 +6,17 @@ updateGame();
 var socket = io(window.location.host);
 
 socket.on('update', function(msg){
-	if (msg == getUrlVars().gameid) updateGame();
+    msg = [msg.split(' ',1).toString(), msg.split(' ').slice(1).join(' ')];
+	if (msg[0] == getUrlVars().gameid) {
+        if (msg[1].length == 0) 
+            return updateGame();
+        
+        //console.log(JSON.parse(msg[1]));
+        //console.log(jsonpatch.applyPatch(game,JSON.parse(msg[1])));
+        
+        updateGameWebSocket(msg[1]);
+        
+    }
 });
 
 socket.on('gamestop', function(msg){
@@ -22,6 +32,13 @@ socket.on('gamestop', function(msg){
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
+function updateGameWebSocket(patchString) {
+    game = jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
+    console.log(game);
+    draw();
+	$( window ).trigger("resize");	
+}
+
 function updateGame() {
 	jQuery.ajax({
 		url: "/rest/game/?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
@@ -31,7 +48,11 @@ function updateGame() {
 		success: function(resultData) {
 			if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 			game = resultData;
-			draw();
+			setTimeout(function() {
+				draw();
+				$( window ).trigger("resize");	
+			}, 10);
+			
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
@@ -70,6 +91,27 @@ function gameLogic(pos, chipsToMove) {
 		data: JSON.stringify({
 			'pos': pos,
 			'chipsToMove': chipsToMove
+		}),
+		contentType: 'application/json; charset=utf-8',
+		success: function(resultData) {
+			
+		},
+		error : function(jqXHR, textStatus, errorThrown) {
+		},
+
+		timeout: 120000,
+	});
+}
+
+function sendChatMessage(chatmessage) {
+	
+	if (game.status != 1) return;
+
+	jQuery.ajax({
+		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		type: "POST",
+		data: JSON.stringify({
+			'chatmessage': chatmessage
 		}),
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
@@ -125,7 +167,8 @@ function draw() {
 		if (game.players[i] == null) {
 			$("#playerText-"+i).hide();
 		} else {
-			$("#playerText-"+i).html(game.players[i].playerName);
+			$("#playerText-"+i).html(game.players[i].playerName + ((game.players[i].turnsIdle === game.idleKickTurns) 
+                ? " (Left)": ((game.players[i].turnsIdle > 0) ? " Idle(" + game.players[i].turnsIdle + ")" : "" )));
 			if (game.playerTurn == i && game.status == 1) $("#playerText-"+i).addClass("possiblePos");
 			else $("#playerText-"+i).removeClass("possiblePos");
 		}
@@ -315,13 +358,8 @@ $(document).ready(function() {
 		});
 	}
 
-	
-	draw();
-	//drawMultiStackUpdate()
 	setInterval(function() {
-		drawMultiStackUpdate();
-		//$("#timeLeftText").text(game.timeLeftTurn + " s");
-	
+		drawMultiStackUpdate();	
 		
 	}, 1000);
 	

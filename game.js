@@ -13,6 +13,7 @@ game.gameId = 0;
 game.winners = [];
 game.status = 1;
 game.players = [];
+game.chatMessage = [];
 game.lastMoveTime;
 for (var i = 0; i < 4;i++) {
 	game.players[i] = {};
@@ -337,9 +338,12 @@ $(document).ready(function() {
 		$("#pos-"+i).data("pos", i);
 		$("#pos-"+i).click(function() {
 			
-			let chipsOn = 0;
+			let chipsOn = 0, chipsOnIn = 0;
 			for (var i = 0;i < game.posiblePos.length;i++) {
-				if (game.posiblePos[i] == $(this).data("pos")) chipsOn++;
+				if (game.posiblePos[i] == $(this).data("pos")) {
+                    if (0 != 53) chipsOn++;
+                    else chipsOnIn++
+                }
 			}
 			if (chipsOn == 1 || $(this).data("pos") == 92) {
 				gameLogic($(this).data("pos"), 1);

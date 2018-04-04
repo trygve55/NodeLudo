@@ -4,6 +4,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script type="text/javascript" src="game2.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fast-json-patch/2.0.6/fast-json-patch.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="game.css"/>
 	<script src="/socket.io/socket.io.js"></script>
@@ -521,12 +522,17 @@
 				<text id="winnersText" style="font-size:180%">test </text>
 			</div>
 		</div>
-		<svg viewBox="0 0 100 100">
-			<polygon points="0,0 0,100 100,100"
-            stroke="black" stroke-width="1" fill="rgb(121,0,121)" onclick="test('Test1')"></polygon>
-			<polygon points="0,0 100,0 100,100"
-            stroke="black" stroke-width="1" fill="rgb(121,0,121)" onclick="test('Lol')"></polygon>
-		</svg>
+		<div id="chatBoxDiv" class="panel panel-default">
+			<div class="panel-heading"  style="padding:0; margin: 0;">
+				<h3 style="text-align: center; padding:0; margin: 0;">Chat</h3>
+			</div>
+			<div class="panel-body" id="chatlog" style="padding:0; margin:0;">
+				<text id="winnersText">Empty chat </text>
+			</div>
+			<div class="panel-footer"  style="padding:0; margin: 0;">
+				<input type="text" name="Send message" style="width: 100%; margin: 0px">
+			</div>
+		</div>
 	</div>
 </div>
 </body>

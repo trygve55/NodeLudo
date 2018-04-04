@@ -118,6 +118,7 @@ module.exports = {
 		game.lastMoveTime = new Date();
 		game.timeLeftTurn;
 		game.isProcessing = false;
+		game.chatMessages = [];
 		game.idleTimeout = gameSettings.idleTimeout;
 		game.idleKickTurns = gameSettings.idleKickTurns;
 		
@@ -128,6 +129,7 @@ module.exports = {
 			game.players[i].chips = [];
 			game.players[i].status = 0;
 			game.players[i].turnsIdle = 0;
+            game.players[i].turnsIdleTotal = 0;
 			for (var j = 0; j < 4;j++) {
 				game.players[i].chips[j] = {};
 				game.players[i].chips[j].pos = j+i*4;
@@ -142,6 +144,9 @@ module.exports = {
 		
 		return game;
 	},
+	postChatMessage: function(game, player, text, color) {
+		addChatMessage(game, player, text, color);
+	},
 	setSocket: function (socket) {
 		io = socket;
 	},
@@ -154,6 +159,11 @@ var io, playerAuth;
 var gameIdIncrement = 0;
 
 var gameTimeout = [];
+
+function addChatMessage(game, player, text, color) {
+	game.chatMessages.push({player: player, time: new Date(), text: text, color: "#ffffff"});
+	io.emit("update", "" + game.gameId);
+}
 
 function checkWin(game) {
 								
@@ -185,6 +195,7 @@ function checkWin(game) {
 		}
 		game.status = 2;
 		io.emit('gamestop', "" + game.gameId);
+		if (gameTimeout[game.gameId]) clearTimeout(gameTimeout[game.gameId]);
 	}
 }
 
@@ -200,7 +211,8 @@ function setIdleTimeout (game) {
 	
 	gameTimeout[game.gameId] = setTimeout(function () {
 		game.players[game.playerTurn].turnsIdle++;
-		if (game.players[game.playerTurn].turnsIdle === game.idleKickTurns) {
+        game.players[game.playerTurn].turnsIdleTotal++;
+		if (game.players[game.playerTurn].turnsIdle === game.idleKickTurns || game.players[game.playerTurn].turnsIdleTotal === game.idleKickTurnsTotal) {
 			game.players[game.playerTurn].status = 1;
 			playerAuth.setIngame(game.players[game.playerTurn].playerId, false);
 			checkWin(game);

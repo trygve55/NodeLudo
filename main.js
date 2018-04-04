@@ -1,9 +1,11 @@
 var express = require('express'),
 	path = require('path'),
 	bodyParser = require('body-parser'),
-	gameJS = require('./import2'),
+	gameJS = require('./import'),
 	playerAuth = require('./playersAuth'),
-	validator = require('validator');
+	validator = require('validator'),
+    clone = require('clone'),
+    jsonpatch = require('fast-json-patch');
 
 var app = require('express')()
   , server = require('http').createServer(app)
@@ -21,14 +23,15 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
-var games = [];
+var games = [], gamesObserver = [];
 gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
 var defaultGameSettings = {
 	idleTimeout: 20000,
-	idleKickTurns: 5,
-    boardSize: 8
+	idleKickTurns: 4,
+    idleKickTurnsTotal: 7,
+    boardSize: 4
 }
 
 app.get('/rest/game', function (req, res) {
@@ -92,9 +95,19 @@ app.use('/rest/game', function (req, res, next) {
 
 app.post('/rest/game', function (req, res) {	
 	
+    let before = clone(games[req.query.gameid]);
+    
+	if (req.body.chatmessage != null) {
+		console.log("Player: " + req.decoded.playerId + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
+		gameJS.postChatMessage(games[req.query.gameid], req.decoded.playerId, req.body.chatmessage, "#ffffff");
+		
+		return res.send("posted");
+	}
+	
 	switch(gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
 		case 1:
-			io.emit('update', "" + games[req.query.gameid].gameId);
+			//io.emit('update', "" + games[req.query.gameid].gameId);
+            io.emit('update', games[req.query.gameid].gameId + " " + JSON.stringify(jsonpatch.generate(gamesObserver[req.query.gameid])));
 			break;
 		case 2:
 			var players = games[req.query.gameid].players;
@@ -104,6 +117,9 @@ app.post('/rest/game', function (req, res) {
 		default:
 			break;
 	}
+    
+    console.log(jsonpatch.generate(gamesObserver[req.query.gameid]));
+    console.log(games[req.query.gameid]);
 	
 	res.send("test");	
 });
@@ -193,6 +209,7 @@ function startGame(players, idleTimeout) {
 	}
 	
 	games.push(game);
+    gamesObserver.push(jsonpatch.observe(game));
 	
 	console.log("Starting game id: " + game.gameId);
 	
