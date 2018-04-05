@@ -121,6 +121,7 @@ module.exports = {
 		game.chatMessages = [];
 		game.idleTimeout = gameSettings.idleTimeout;
 		game.idleKickTurns = gameSettings.idleKickTurns;
+        game.version = 0;
 		
 		for (var i = 0; i < players.length;i++) {
 			game.players[i] = {};

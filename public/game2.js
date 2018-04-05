@@ -11,11 +11,7 @@ socket.on('update', function(msg){
         if (msg[1].length == 0) 
             return updateGame();
         
-        //console.log(JSON.parse(msg[1]));
-        //console.log(jsonpatch.applyPatch(game,JSON.parse(msg[1])));
-        
-        updateGameWebSocket(msg[1]);
-        
+        updateGameWebSocket(msg[1]);     
     }
 });
 
@@ -28,13 +24,16 @@ socket.on('gamestop', function(msg){
 		}, 6000);	
 	}
 });
-
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGameWebSocket(patchString) {
-    game = jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
-    console.log(game);
+    var oldVersion = game.version
+    jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
+    
+    if (game.version !== oldVersion + 1) 
+        return updateGame();
+    
     draw();
 	$( window ).trigger("resize");	
 }

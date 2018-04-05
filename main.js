@@ -107,12 +107,12 @@ app.post('/rest/game', function (req, res) {
 	switch(gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
 		case 1:
 			//io.emit('update', "" + games[req.query.gameid].gameId);
-            io.emit('update', games[req.query.gameid].gameId + " " + JSON.stringify(jsonpatch.generate(gamesObserver[req.query.gameid])));
+            sendUpdate(games[req.query.gameid].gameId);
 			break;
 		case 2:
 			var players = games[req.query.gameid].players;
 			for (var i = 0;i < players.length;i++) playerAuth.setIngame(players[i].playerId, false);
-			io.emit('update', "" + games[req.query.gameid].gameId);
+			sendUpdate(games[req.query.gameid].gameId);
 			break;
 		default:
 			break;
@@ -216,4 +216,9 @@ function startGame(players, idleTimeout) {
 	var string = game.gameId;
 	for (var i = 0;i < players.length;i++) string += " " + players[i].playerId;
 	io.emit('gamestart', string);
+}
+
+function sendUpdate(gameId) {
+    games[gameId].version++;
+    io.emit('update', gameId + " " + JSON.stringify(jsonpatch.generate(gamesObserver[gameId])));
 }
