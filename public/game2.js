@@ -1,12 +1,10 @@
 var isPlayer = 0;
 
-var game = null;
-updateGame(function(){
-    $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
-});
-	
-var socket = io(window.location.host);
+var game = null,
+    socket = io(window.location.host);
 
+var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    
 socket.on('update', function(msg){
     msg = [msg.split(' ',1).toString(), msg.split(' ').slice(1).join(' ')];
 	if (msg[0] == getUrlVars().gameid) {
@@ -18,8 +16,6 @@ socket.on('update', function(msg){
 });
 
 socket.on('gamestop', function(msg){
-	console.log(msg);
-	console.log("game end");
 	if (msg == getUrlVars().gameid) {
 		setTimeout(function() {
 			window.location.href = "/lobby";
@@ -31,8 +27,6 @@ socket.on('connect_error', function(err) {
   alert("Connection lost. The webpage will now refresh.");
   location.reload();
 });
-		
-var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGameWebSocket(patchString) {
     var oldVersion = game.version
@@ -329,8 +323,10 @@ $(document).ready(function() {
 	validateToken(function(valid) {
 		if (!valid) window.location.href = "/";
 	});
-	
-	var size = (($(window).width() < $(window).height()) ? $(window).width() : $(window).height());
+    
+    updateGame(function(){
+        $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
+    });
 	
 	$( window ).resize(function()  {
 		var size = $('.grid').width();
