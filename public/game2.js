@@ -1,7 +1,9 @@
 var isPlayer = 0;
 
 var game = null;
-updateGame();
+updateGame(function(){
+    $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
+});
 	
 var socket = io(window.location.host);
 
@@ -44,7 +46,7 @@ function updateGameWebSocket(patchString) {
 	//$( window ).trigger("resize");	
 }
 
-function updateGame() {
+function updateGame(cb) {
 	jQuery.ajax({
 		url: "/rest/game/?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "GET",
@@ -55,6 +57,7 @@ function updateGame() {
 			game = resultData;
 			setTimeout(function() {
 				draw();
+                if (cb) cb();
 				//$( window ).trigger("resize");	
 			}, 10);
 			
@@ -142,7 +145,8 @@ function draw() {
         $("#chatLog").append(msg);
     }
     
-    $("#chatLog").scrollTop($("#chatLog").scrollHeight);
+    if ($("#chatLog").prop("scrollHeight") - $("#chatLog").scrollTop() < 180)
+        $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
     
     //clear all chips
 	while (drawedAt.length != 0) {
@@ -353,7 +357,7 @@ $(document).ready(function() {
 				gameLogic($(this).data("pos"), 1);
 				if ($(this).data("pos") == 92 && !game.waitingForMove &&  isTurn()) animateDice(game.lastDice, 350);
 			}
-			else if (chipsOn > 1){				
+			else if (chipsOn > 1 && isTurn()){				
 				var content = "";
 				for (var i = 0;i < chipsOn;i++) {
 					content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i+1) + "); removePopover();' style='width:100px'>Move " + (i+1) + " chip</botton>" + ((i < chipsOn) ? "<br>" : "");
