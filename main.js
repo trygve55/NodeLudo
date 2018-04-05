@@ -99,8 +99,10 @@ app.post('/rest/game', function (req, res) {
     
 	if (req.body.chatmessage != null) {
 		console.log("Player: " + req.decoded.playerId + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
-		gameJS.postChatMessage(games[req.query.gameid], req.decoded.playerId, req.body.chatmessage, "#ffffff");
-		
+		gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, "#ffffff");
+        
+        sendUpdate(games[req.query.gameid].gameId);
+        
 		return res.send("posted");
 	}
 	

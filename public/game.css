@@ -165,3 +165,14 @@ body {
   position: relative;
 }
 
+#chatLog {
+    padding:0;
+    margin:0;
+    overflow: auto;
+    max-height: 120px;
+    min-height: 20px;
+}
+
+.chatMessage {
+    word-wrap: break-word;
+}

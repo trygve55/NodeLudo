@@ -32,10 +32,11 @@ function updateGameWebSocket(patchString) {
     jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
     
     if (game.version !== oldVersion + 1) 
+        console.log("version error");
         return updateGame();
     
     draw();
-	$( window ).trigger("resize");	
+	//$( window ).trigger("resize");	
 }
 
 function updateGame() {
@@ -125,6 +126,16 @@ function sendChatMessage(chatmessage) {
 
 function draw() {
 	
+    //chatlog
+    $("#chatLog").empty();
+    
+    for (var i = 0; i < game.chatMessages.length;i++) {
+        $("#chatLog").append("<p class='chatMessage'>" + game.chatMessages[i].player.playerName + " : " + game.chatMessages[i].text + " </p>");
+    }
+    
+    $("#chatLog").scrollTop($("#chatLog")[0].scrollHeight);
+    
+    //clear all chips
 	while (drawedAt.length != 0) {
 		$("#pos-"+drawedAt.pop()).empty();
 	}
@@ -371,12 +382,21 @@ $(document).ready(function() {
 	$("#nextPlayer").click(function() {
 		for (var i = 0;i < 30; i++) ludoAI();
 	});
+    
 	$("#runGame").click(function() {
 		autoPlay();
 	});
+    
 	$("#diceBottom").click(function() {
 		playerThrowDice();
 	});
+    
+    $("#chatTypeBox").keyup(function(event) {
+        if (event.keyCode === 13 && $("#chatTypeBox").val().length !== 0) {
+            sendChatMessage($("#chatTypeBox").val());
+            $("#chatTypeBox").val("");
+        }
+    });
 	
 	$(document).keydown(function(e) {
 		if(e.keyCode == 32 && isTurn()) {
