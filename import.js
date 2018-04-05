@@ -121,6 +121,7 @@ module.exports = {
 		game.chatMessages = [];
 		game.idleTimeout = gameSettings.idleTimeout;
 		game.idleKickTurns = gameSettings.idleKickTurns;
+        game.version = 0;
 		
 		for (var i = 0; i < players.length;i++) {
 			game.players[i] = {};
@@ -162,7 +163,7 @@ var gameTimeout = [];
 
 function addChatMessage(game, player, text, color) {
 	game.chatMessages.push({player: player, time: new Date(), text: text, color: "#ffffff"});
-	io.emit("update", "" + game.gameId);
+	//io.emit("update", "" + game.gameId);
 }
 
 function checkWin(game) {
@@ -222,7 +223,8 @@ function setIdleTimeout (game) {
 		//updatePosible(game);
 		game.posiblePos = [92];
 		io.emit("update", "" + game.gameId);
-		resetIdleTimeout(game, true);
+		if (game.status == 1) 
+            resetIdleTimeout(game, true);
 	}, game.idleTimeout);
 }
 

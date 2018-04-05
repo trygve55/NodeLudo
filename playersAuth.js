@@ -24,6 +24,9 @@ module.exports = {
 	getPlayerId: function (playerName) {
 		return getPlayerId(playerName);
 	},
+    getPlayerById: function (playerName) {
+		return getPlayerById(playerName);
+	},
 	setIngame: function (playerId, ingame) {
 		setIngame(playerId, ingame);
 	},
@@ -125,6 +128,13 @@ function getPlayerId(playerName) {
 	
 	return;
 }
+
+function getPlayerById(playerId) {
+	return players[playerId];
+	
+	return;
+}
+
 
 function setReady(playerId, ready) {
 	players[playerId].ingame = false;

@@ -99,27 +99,25 @@ app.post('/rest/game', function (req, res) {
     
 	if (req.body.chatmessage != null) {
 		console.log("Player: " + req.decoded.playerId + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
-		gameJS.postChatMessage(games[req.query.gameid], req.decoded.playerId, req.body.chatmessage, "#ffffff");
-		
+		gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, "#ffffff");
+        
+        sendUpdate(games[req.query.gameid].gameId);
+        
 		return res.send("posted");
 	}
 	
 	switch(gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
 		case 1:
-			//io.emit('update', "" + games[req.query.gameid].gameId);
-            io.emit('update', games[req.query.gameid].gameId + " " + JSON.stringify(jsonpatch.generate(gamesObserver[req.query.gameid])));
+            sendUpdate(games[req.query.gameid].gameId);
 			break;
 		case 2:
 			var players = games[req.query.gameid].players;
 			for (var i = 0;i < players.length;i++) playerAuth.setIngame(players[i].playerId, false);
-			io.emit('update', "" + games[req.query.gameid].gameId);
+			sendUpdate(games[req.query.gameid].gameId);
 			break;
 		default:
 			break;
 	}
-    
-    console.log(jsonpatch.generate(gamesObserver[req.query.gameid]));
-    console.log(games[req.query.gameid]);
 	
 	res.send("test");	
 });
@@ -215,5 +213,12 @@ function startGame(players, idleTimeout) {
 	
 	var string = game.gameId;
 	for (var i = 0;i < players.length;i++) string += " " + players[i].playerId;
-	io.emit('gamestart', string);
+    setTimeout(function() {
+        io.emit('gamestart', string);
+    }, 200);
+}
+
+function sendUpdate(gameId) {
+    games[gameId].version++;
+    io.emit('update', gameId + " " + JSON.stringify(jsonpatch.generate(gamesObserver[gameId])));
 }

@@ -11,11 +11,7 @@ socket.on('update', function(msg){
         if (msg[1].length == 0) 
             return updateGame();
         
-        //console.log(JSON.parse(msg[1]));
-        //console.log(jsonpatch.applyPatch(game,JSON.parse(msg[1])));
-        
-        updateGameWebSocket(msg[1]);
-        
+        updateGameWebSocket(msg[1]);     
     }
 });
 
@@ -29,14 +25,23 @@ socket.on('gamestop', function(msg){
 	}
 });
 
+socket.on('connect_error', function(err) {
+  alert("Connection lost. The webpage will now refresh.");
+  location.reload();
+});
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 
 function updateGameWebSocket(patchString) {
-    game = jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
-    console.log(game);
+    var oldVersion = game.version
+    jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
+    
+    if (game.version !== oldVersion + 1) 
+        console.log("version error");
+        return updateGame();
+    
     draw();
-	$( window ).trigger("resize");	
+	//$( window ).trigger("resize");	
 }
 
 function updateGame() {
@@ -50,14 +55,15 @@ function updateGame() {
 			game = resultData;
 			setTimeout(function() {
 				draw();
-				$( window ).trigger("resize");	
+				//$( window ).trigger("resize");	
 			}, 10);
 			
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
+            updateGame()
 		},
 
-		timeout: 120000,
+		timeout: 2000,
 	});
 }
 
@@ -126,6 +132,19 @@ function sendChatMessage(chatmessage) {
 
 function draw() {
 	
+    //chatlog
+    $("#chatLog").empty();
+    
+    for (var i = 0; i < game.chatMessages.length;i++) {
+        var msg = $("<div/>").addClass("chatMessage");
+        $("<div/>").text(game.chatMessages[i].player.playerName + " : ").css('width', '60px').css('display', 'inline').appendTo(msg);
+        $("<div/>").text(game.chatMessages[i].text).css('display', 'inline').appendTo(msg);
+        $("#chatLog").append(msg);
+    }
+    
+    $("#chatLog").scrollTop($("#chatLog").scrollHeight);
+    
+    //clear all chips
 	while (drawedAt.length != 0) {
 		$("#pos-"+drawedAt.pop()).empty();
 	}
@@ -301,10 +320,6 @@ function validateToken(next) {
 	});
 }
 
-function test(string) {
-	console.log(string);
-}
-
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
@@ -372,12 +387,21 @@ $(document).ready(function() {
 	$("#nextPlayer").click(function() {
 		for (var i = 0;i < 30; i++) ludoAI();
 	});
+    
 	$("#runGame").click(function() {
 		autoPlay();
 	});
+    
 	$("#diceBottom").click(function() {
 		playerThrowDice();
 	});
+    
+    $("#chatTypeBox").keyup(function(event) {
+        if (event.keyCode === 13 && $("#chatTypeBox").val().length !== 0) {
+            sendChatMessage($("#chatTypeBox").val());
+            $("#chatTypeBox").val("");
+        }
+    });
 	
 	$(document).keydown(function(e) {
 		if(e.keyCode == 32 && isTurn()) {
