@@ -15,6 +15,11 @@ socket.on('gamestart', function(msg){
 	}
 });
 
+socket.on('connect_error', function(err) {
+  alert("Connection lost. The webpage will now refresh.");
+  location.reload();
+});
+
 function updateLobby() {
 	jQuery.ajax({
 		url: "/rest/lobby?token="+ localStorage.token,

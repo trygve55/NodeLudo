@@ -24,6 +24,11 @@ socket.on('gamestop', function(msg){
 		}, 6000);	
 	}
 });
+
+socket.on('connect_error', function(err) {
+  alert("Connection lost. The webpage will now refresh.");
+  location.reload();
+});
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 

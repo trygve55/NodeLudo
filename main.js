@@ -215,7 +215,7 @@ function startGame(players, idleTimeout) {
 	for (var i = 0;i < players.length;i++) string += " " + players[i].playerId;
     setTimeout(function() {
         io.emit('gamestart', string);
-    }, 20);
+    }, 200);
 }
 
 function sendUpdate(gameId) {
