@@ -105,6 +105,15 @@ app.post('/rest/game', function (req, res) {
         
 		return res.send("posted");
 	}
+    
+    if (req.body.leave != null) {
+		console.log("Player: " + req.decoded.playerId + " left game '" + req.query.gameid);
+		gameJS.leaveGame(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId));
+        
+        sendUpdate(games[req.query.gameid].gameId);
+        
+		return res.send("posted");
+	}
 	
 	switch(gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
 		case 1:

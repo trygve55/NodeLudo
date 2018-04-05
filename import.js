@@ -153,7 +153,10 @@ module.exports = {
 	},
 	setPlayerAuth: function (pa) {
 		playerAuth = pa;
-	}
+	},
+    leaveGame: function (game, player) {
+        leaveGame(game, player);
+    }
 };
 
 var io, playerAuth;
@@ -223,9 +226,25 @@ function setIdleTimeout (game) {
 		//updatePosible(game);
 		game.posiblePos = [92];
 		io.emit("update", "" + game.gameId);
-		if (game.status == 1) 
+		if (game.status === 1) 
             resetIdleTimeout(game, true);
 	}, game.idleTimeout);
+}
+
+function leaveGame(game, player, update) {
+    for (var i = 0; i < game.players.length;i++) {
+        if (game.players[i].playerId === player.playerId) {
+            game.players[i].status = 1;
+			playerAuth.setIngame(player.playerId, false);
+			checkWin(game);
+            nextPlayer(game);
+            game.waitingForMove = false;
+            game.posiblePos = [92];
+            if (game.playerTurn === i && game.status === 1) 
+                resetIdleTimeout(game, true);
+            io.emit("update", "" + game.gameId);
+        }
+    }
 }
 
 function knockoutOn(game, pos) {

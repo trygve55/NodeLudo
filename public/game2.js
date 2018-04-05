@@ -127,6 +127,28 @@ function sendChatMessage(chatmessage) {
 	});
 }
 
+function leaveGame() {
+	
+	if (game.status != 1) return;
+
+	jQuery.ajax({
+		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		type: "POST",
+		data: JSON.stringify({
+			'leave': true,
+		}),
+		contentType: 'application/json; charset=utf-8',
+		success: function(resultData) {
+			
+		},
+		error : function(jqXHR, textStatus, errorThrown) {
+		},
+
+		timeout: 120000,
+	});
+}
+
+
 function draw() {
 	
     //chatlog
