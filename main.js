@@ -108,7 +108,6 @@ app.post('/rest/game', function (req, res) {
 	
 	switch(gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
 		case 1:
-			//io.emit('update', "" + games[req.query.gameid].gameId);
             sendUpdate(games[req.query.gameid].gameId);
 			break;
 		case 2:
@@ -119,9 +118,6 @@ app.post('/rest/game', function (req, res) {
 		default:
 			break;
 	}
-    
-    console.log(jsonpatch.generate(gamesObserver[req.query.gameid]));
-    console.log(games[req.query.gameid]);
 	
 	res.send("test");	
 });
@@ -217,7 +213,9 @@ function startGame(players, idleTimeout) {
 	
 	var string = game.gameId;
 	for (var i = 0;i < players.length;i++) string += " " + players[i].playerId;
-	io.emit('gamestart', string);
+    setTimeout(function() {
+        io.emit('gamestart', string);
+    }, 20);
 }
 
 function sendUpdate(gameId) {

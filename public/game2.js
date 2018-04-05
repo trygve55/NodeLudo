@@ -50,14 +50,15 @@ function updateGame() {
 			game = resultData;
 			setTimeout(function() {
 				draw();
-				$( window ).trigger("resize");	
+				//$( window ).trigger("resize");	
 			}, 10);
 			
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
+            updateGame()
 		},
 
-		timeout: 120000,
+		timeout: 2000,
 	});
 }
 
@@ -130,10 +131,13 @@ function draw() {
     $("#chatLog").empty();
     
     for (var i = 0; i < game.chatMessages.length;i++) {
-        $("#chatLog").append("<p class='chatMessage'>" + game.chatMessages[i].player.playerName + " : " + game.chatMessages[i].text + " </p>");
+        var msg = $("<div/>").addClass("chatMessage");
+        $("<div/>").text(game.chatMessages[i].player.playerName + " : ").css('width', '60px').css('display', 'inline').appendTo(msg);
+        $("<div/>").text(game.chatMessages[i].text).css('display', 'inline').appendTo(msg);
+        $("#chatLog").append(msg);
     }
     
-    $("#chatLog").scrollTop($("#chatLog")[0].scrollHeight);
+    $("#chatLog").scrollTop($("#chatLog").scrollHeight);
     
     //clear all chips
 	while (drawedAt.length != 0) {
@@ -309,10 +313,6 @@ function validateToken(next) {
 		},
 		timeout: 120000,
 	});
-}
-
-function test(string) {
-	console.log(string);
 }
 
 $(document).ready(function() {
