@@ -3,7 +3,11 @@ var isPlayer = 0;
 var game = null,
     socket = io(window.location.host);
 
-var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+var drawedAt = [], 
+    prevPossible = [],
+    prevPossibleNext = [],
+    multipleStackDrawCounter = 0,
+    chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
     
 socket.on('update', function(msg){
     msg = [msg.split(' ',1).toString(), msg.split(' ').slice(1).join(' ')];
@@ -164,6 +168,12 @@ function draw() {
     if ($("#chatLog").prop("scrollHeight") - $("#chatLog").scrollTop() < 180)
         $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
     
+    //give up button
+    if (isActivePlayer())
+        $("#leaveGame").css('visibility','visible');
+    else
+        $("#leaveGame").css('visibility','hidden');
+    
     //clear all chips
 	while (drawedAt.length != 0) {
 		$("#pos-"+drawedAt.pop()).empty();
@@ -308,6 +318,14 @@ function isTurn() {
 	return (localStorage.playerId == game.players[game.playerTurn].playerId);
 }
 
+function isActivePlayer() {
+    for (var i = 0; i < game.players.length; i++) 
+		if (game.players[i].playerId == localStorage.playerId && game.players[i].status === 0 && game.status === 1) 
+            return true;
+
+    return false;
+}
+
 function getUrlVars()
 {
     var vars = [], hash;
@@ -416,6 +434,10 @@ $(document).ready(function() {
     
 	$("#diceBottom").click(function() {
 		playerThrowDice();
+	});
+    
+    $("#leaveGame").click(function() {
+		leaveGame();
 	});
     
     $("#chatTypeBox").keyup(function(event) {
