@@ -112,4 +112,14 @@ $(document).ready(function() {
 			timeout: 120000
 		});
 	});
+	
+	setInterval(function() {
+		jQuery.ajax({
+			url: "/rest/active?token="+ localStorage.token,
+			type: "POST",
+			data: JSON.stringify({}),
+			contentType: 'application/json; charset=utf-8',
+			timeout: 1000
+		});
+	}, 1000);
 });

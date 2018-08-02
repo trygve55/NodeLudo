@@ -369,14 +369,19 @@ $(document).ready(function() {
     });
 	
 	$( window ).resize(function()  {
+		$('.grid').css({'width': 'auto'});
 		var size = $('.grid').width();
 		if (size > document.body.clientHeight - 10) {
 			size = document.body.clientHeight - 10;
 			$('.grid').css({'width': size +'px'});
 		} else {
-			$('.grid').css({'width': 'auto'});
+			//$('.grid').css({'width': 'auto'});
 		}
 		$('.grid').css({'height': size +'px'});
+		
+		setTimeout(function() {
+			//$( window ).trigger("resize");
+		}, 500);
 	});
 	
 	$( window ).trigger("resize");

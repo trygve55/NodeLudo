@@ -169,9 +169,17 @@ app.use('/rest/players', function (req, res, next) {
 });
 
 app.delete('/rest/player', function (req, res) {
-	
 	playerAuth[player] = null;
 	io.emit('lobby', "");
+});
+
+app.use('/rest/active', function (req, res, next) {
+	playerAuth.auth(req, res, next);
+});
+
+app.post('/rest/active', function (req, res) {
+	playerAuth.addPlayerToLobby(req.decoded.playerId);
+	res.send("ok");
 });
 
 app.post('/rest/playerExists', function (req, res) {
@@ -193,6 +201,10 @@ app.get('/rest/login', function (req, res) {
 	playerAuth.auth(req, res, function() {
 		res.json({'valid' : true})
 	});
+});
+
+playerAuth.setLobbyCallback(function() {
+	io.emit('lobby', "");
 });
 
 function startGame(players, idleTimeout) {
