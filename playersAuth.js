@@ -28,13 +28,22 @@ module.exports = {
 		return getPlayerById(playerName);
 	},
 	setIngame: function (playerId, ingame) {
-		setIngame(playerId, ingame);
+		players[playerId].ingame = ingame;
 	},
 	setReady: function (playerId, ready) {
-		setReady(playerId, ready);
+		players[playerId].ready = ready;
+	},
+	setInLobby: function (playerId, inLobby) {
+		players[playerId].inLobby = inLobby;
 	},
 	setSpectating: function (playerId, spectating) {
-		setSpectating(playerId, spectating);
+		players[playerId].spectating = spectating;
+	},
+	setLobbyCallback: function (cb) {
+		updateLobbyCallback = cb;
+	},
+	playerActive: function (playerId) {
+		return playerActive(playerId);
 	}
 };
 
@@ -44,6 +53,22 @@ var config = require('./config');
 playersIncrement = 0;
 var players = [];
 var playerToken = [];
+var updateLobbyCallback;
+
+setInterval(function() {
+	if (updateLobbyCallback) {
+		var changes = false;
+		for (var i = 0; i < players.length;i++) {
+			if (players[i].inLobby &&  new Date() - players[i].lastActiveLobby > config.lobbyTimeout) {
+				players[i].inLobby = false;
+                players[i].ready = false;
+				changes = true;
+				console.log("player: " + players[i].playerName + " is inactive. ");
+			}
+		}
+		if (changes) updateLobbyCallback(players);
+	}
+}, config.lobbyTimeoutCheckInterval)
 
 function auth(req, res, next) {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -51,28 +76,29 @@ function auth(req, res, next) {
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {      
 			if (err) {
-				//res.redirect('/');
-				// res.status(403).send({ 
-					// success: false, 
-					// message: 'Failed to authenticate token.' 
-				// });
 				res.status(200).send({ 
 					redirect: '/'
 				});
 				
 			} else {
-				req.decoded = decoded;    
+				req.decoded = decoded;
 				next();
 			}
 		});
 	} else  {
-		
-		//res.redirect('/');
 		res.status(200).send({ 
 			redirect: '/'
 		});
 		
 	}
+}
+
+function playerActive(playerId) {
+    players[playerId].lastActiveLobby = new Date();
+    if (players[playerId].inLobby == true) return;
+	players[playerId].inLobby = true;
+	console.log("player: " + players[playerId].playerName + " is active. ");
+	updateLobbyCallback(players);
 }
 
 function playerExists(playerName) {
@@ -89,7 +115,7 @@ function addPlayer(playerName) {
 		playerId: playersIncrement
 	};
 	
-	players.push({playerId : playersIncrement, playerName: playerName, ingame: false, ready: false, spectating: false});
+	players.push({playerId : playersIncrement, playerName: playerName, ingame: false, ready: false, spectating: false, inLobby: true, lastActiveLobby: new Date()});
 	playersIncrement++;
 	
 	var token = jwt.sign(payload, config.secret, {
@@ -97,14 +123,14 @@ function addPlayer(playerName) {
 	});
 	
 	playerToken.push(token);
-	
+    
 	return token;
 }
 
 function getLobbyPlayers() {
 	var lobbyPlayers = [];
 	for (var i = 0;i < players.length;i++) {
-		if (!players[i].ingame) lobbyPlayers[lobbyPlayers.length] = players[i];
+		if (players[i].inLobby) lobbyPlayers[lobbyPlayers.length] = players[i];
 	}
 	return lobbyPlayers;
 }
@@ -119,7 +145,7 @@ function getReadyPlayers() {
 
 function authPlayer(req, res) {
 	console.log(req.decoded);
-
+	player[playerId].lastActiveLobby = new Date();
 	return (playerToken[playerId] == token);
 }
 
@@ -131,25 +157,4 @@ function getPlayerId(playerName) {
 
 function getPlayerById(playerId) {
 	return players[playerId];
-	
-	return;
-}
-
-
-function setReady(playerId, ready) {
-	players[playerId].ingame = false;
-	players[playerId].spectating = false;
-	players[playerId].ready = ready;
-}
-
-function setIngame(playerId, ingame) {
-	players[playerId].ready = false;
-	players[playerId].spectating = false;
-	players[playerId].ingame = ingame;
-}
-
-function setSpectating(playerId, spectating) {
-	players[playerId].ingame = false;
-	players[playerId].ready = false;
-	players[playerId].spectating = spectating;
 }

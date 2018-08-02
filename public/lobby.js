@@ -41,7 +41,7 @@ function updateLobby() {
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
 
-		timeout: 120000,
+		timeout: 2000,
 	});
 	
 	jQuery.ajax({
@@ -86,7 +86,7 @@ function updateLobby() {
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
 
-		timeout: 120000,
+		timeout: 2000,
 	});
 }
 
@@ -99,7 +99,7 @@ $(document).ready(function() {
 			type: "POST",
 			data: JSON.stringify({action: "startGame"}),
 			contentType: 'application/json; charset=utf-8',
-			timeout: 120000
+			timeout: 2000
 		});
 	});
 	
@@ -109,7 +109,17 @@ $(document).ready(function() {
 			type: "POST",
 			data: JSON.stringify({action: "ready"}),
 			contentType: 'application/json; charset=utf-8',
-			timeout: 120000
+			timeout: 2000
 		});
 	});
+	
+	setInterval(function() {
+		jQuery.ajax({
+			url: "/rest/active?token="+ localStorage.token,
+			type: "POST",
+			data: JSON.stringify({}),
+			contentType: 'application/json; charset=utf-8',
+			timeout: 1000
+		});
+	}, 3000);
 });
