@@ -44,13 +44,16 @@ module.exports = {
 	},
 	playerActive: function (playerId) {
 		return playerActive(playerId);
+    },
+	addPlayerToLobby: function (playerId) {
+		return addPlayerToLobby(playerId);
 	}
 };
 
 var jwt    = require('jsonwebtoken'); 
 var config = require('./config');
 
-playersIncrement = 0;
+var playersIncrement = 0;
 var players = [];
 var playerToken = [];
 var updateLobbyCallback;
@@ -68,7 +71,7 @@ setInterval(function() {
 		}
 		if (changes) updateLobbyCallback(players);
 	}
-}, config.lobbyTimeoutCheckInterval)
+}, config.lobbyTimeoutCheckInterval);
 
 function auth(req, res, next) {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -82,6 +85,7 @@ function auth(req, res, next) {
 				
 			} else {
 				req.decoded = decoded;
+
 				next();
 			}
 		});
@@ -125,6 +129,13 @@ function addPlayer(playerName) {
 	playerToken.push(token);
     
 	return token;
+}
+
+function addPlayerToLobby(playerId) {
+	if (players[playerId].inLobby == true) return;
+	players[playerId].inLobby = true;
+	console.log("player: " + players[playerId].playerName + " is active. ");
+	updateLobbyCallback(players);
 }
 
 function getLobbyPlayers() {
