@@ -5,7 +5,8 @@ var express = require('express'),
 	playerAuth = require('./playersAuth'),
 	validator = require('validator'),
     clone = require('clone'),
-    jsonpatch = require('fast-json-patch');
+    jsonpatch = require('fast-json-patch'),
+    config = require('./config');
 
 var app = require('express')()
   , server = require('http').createServer(app)
@@ -15,7 +16,7 @@ app.start = app.listen = function(){
   return server.listen.apply(server, arguments)
 }
 
-app.start(80)
+app.start(config.port)
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('views', path.join(__dirname, 'views'));
