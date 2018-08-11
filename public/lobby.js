@@ -62,7 +62,7 @@ function updateLobby() {
 		success: function(resultData) {
 			if (resultData.length == 0) {
 				$("#ongoingGames").text("No games ongoing");
-				$("#previousGames").text("No games ongoing");
+				$("#previousGames").text("No previous games");
 			} else {
 				$("#ongoingGames").empty();
 				$("#previousGames").empty();

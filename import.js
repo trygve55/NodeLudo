@@ -30,6 +30,8 @@ module.exports = {
 						} else {
 							var newPos = game.players[game.playerTurn].chips[chipsOnPos[i]].pos + game.lastDice;
 							var newDistance = game.players[game.playerTurn].chips[chipsOnPos[i]].distance + game.lastDice
+                            game.players[game.playerTurn].stats.totalDistance += game.lastDice;
+                            game.players[game.playerTurn].stats.sumDistance += game.lastDice;
 						
 							if (newPos > 67 && newPos < 74) {
 								newPos += -52;
@@ -76,6 +78,8 @@ module.exports = {
 			game.throwsLeft--;
 			if (game.nextDice == 6) {
 				game.throwsLeft = 1;
+                game.currentCombo++;
+                if (game.currentCombo > game.players[game.playerTurn].stats.highestCombo) game.players[game.playerTurn].stats.highestCombo = game.currentCombo;
 				if (game.posiblePos.length == 0);
 				else game.waitingForMove = true;
 			} else if (allOnStart && game.throwsLeft <= 0 && game.posiblePos.length == 0) {
@@ -122,6 +126,7 @@ module.exports = {
 		game.idleTimeout = gameSettings.idleTimeout;
 		game.idleKickTurns = gameSettings.idleKickTurns;
         game.version = 0;
+        game.currentCombo = 0;
 		
 		for (var i = 0; i < players.length;i++) {
 			game.players[i] = {};
@@ -257,26 +262,45 @@ function leaveGame(game, player, update) {
 function knockoutOn(game, pos) {
 	for (var i = 0;i < game.players.length;i++) {
 		if (i != game.playerTurn) {
+            var chipsKnockedOut = 0;
 			for (var j = 0;j < 4;j++) {
 				if (game.players[i].chips[j].pos == pos) {
 					if (i == 0 && pos != 16) {
 						game.players[i].chips[j].pos = j+i*4;
 						game.players[i].chips[j].distance = 0;
+                        game.players[game.playerTurn].stats.knockouts++;
+                        game.players[i].stats.chipsLost++;
+                        chipsKnockedOut++;
+                        recalcSumDistance(game, i);
 					}
 					if (i == 1 && pos != 29) {
 						game.players[i].chips[j].pos = j+i*4;
 						game.players[i].chips[j].distance = 0;
+                        game.players[game.playerTurn].stats.knockouts++;
+                        game.players[i].stats.chipsLost++;
+                        chipsKnockedOut++;
+                        recalcSumDistance(game, i);
 					}
 					if (i == 2 && pos != 42) {
 						game.players[i].chips[j].pos = j+i*4;
 						game.players[i].chips[j].distance = 0;
+                        game.players[game.playerTurn].stats.knockouts++;
+                        game.players[i].stats.chipsLost++;
+                        chipsKnockedOut++;
+                        recalcSumDistance(game, i);
 					}
 					if (i == 3 && pos != 55) {
 						game.players[i].chips[j].pos = j+i*4;
 						game.players[i].chips[j].distance = 0;
+                        game.players[game.playerTurn].stats.knockouts++;
+                        game.players[i].stats.chipsLost++;
+                        chipsKnockedOut++;
+                        recalcSumDistance(game, i);
 					}
 				}
 			}
+            
+            if (chipsKnockedOut > game.players[game.playerTurn].stats.largestKnockout) game.players[game.playerTurn].stats.largestKnockout = chipsKnockedOut;
 		}
 	}
 }
@@ -286,6 +310,7 @@ function nextPlayer(game) {
 	if (game.status != 1) return;
 	
 	game.playerTurn++;
+    game.currentCombo = 0;
 	if (game.playerTurn == game.players.length) {
 		game.turn++;
 		game.playerTurn = 0;
@@ -316,6 +341,11 @@ function nextPlayer(game) {
 
 function dice() {
 	return Math.floor(Math.random() * 6) + 1  
+}
+
+function recalcSumDistance(game, playerIndex) {
+    game.players[playerIndex].stats.sumDistance = 0;
+    for (var i = 0;i < 4;i++) game.players[playerIndex].stats.sumDistance += game.players[playerIndex].chips[i].distance;
 }
 
 function updatePosible(game) {

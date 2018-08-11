@@ -15,7 +15,12 @@ socket.on('update', function(msg){
         if (msg[1].length == 0) 
             return updateGame();
         
-        updateGameWebSocket(msg[1]);     
+        updateGameWebSocket(msg[1]); 
+        
+        console.log("Player '" + game.players[(game.playerTurn + game.players.length - 1) % game.players.length ].playerName + "' stats:" );
+        console.log(game.players[(game.playerTurn + game.players.length - 1) % game.players.length ].stats);
+        console.log("Player '" + game.players[game.playerTurn].playerName + "' stats:" );
+        console.log(game.players[game.playerTurn].stats);
     }
 });
 

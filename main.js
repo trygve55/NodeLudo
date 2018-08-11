@@ -24,6 +24,8 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
+console.log("Server started on port " + config.port + ".");
+
 var games = [], gamesObserver = [];
 gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
