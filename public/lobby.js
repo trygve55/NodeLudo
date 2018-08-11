@@ -20,6 +20,16 @@ socket.on('connect_error', function(err) {
   location.reload();
 });
 
+function sendActiveSignal() {
+    jQuery.ajax({
+        url: "/rest/active?token="+ localStorage.token,
+        type: "POST",
+        data: JSON.stringify({}),
+        contentType: 'application/json; charset=utf-8',
+        timeout: 1000
+    });
+}
+
 function updateLobby() {
 	jQuery.ajax({
 		url: "/rest/lobby?token="+ localStorage.token,
@@ -112,14 +122,10 @@ $(document).ready(function() {
 			timeout: 2000
 		});
 	});
-	
-	setInterval(function() {
-		jQuery.ajax({
-			url: "/rest/active?token="+ localStorage.token,
-			type: "POST",
-			data: JSON.stringify({}),
-			contentType: 'application/json; charset=utf-8',
-			timeout: 1000
-		});
+    
+    sendActiveSignal();
+    setInterval(function() {
+		sendActiveSignal();
 	}, 3000);
+
 });
