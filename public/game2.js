@@ -433,6 +433,7 @@ $(document).ready(function() {
 	}, 1000);
 	
 	setInterval(function() {
+        if (game === null) return;
 		$("#timeLeftText").html(getTimeLeftSVG());
 		if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
 		if (game.status != 1) game.timeLeftTurn = 0;
