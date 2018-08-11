@@ -137,6 +137,13 @@ module.exports = {
 				game.players[i].chips[j].distance = 0;
 				game.players[i].chips[j].inAtTurn = -1;
 			}
+            game.players[i].stats = {};
+            game.players[i].stats.totalDistance = 0;
+            game.players[i].stats.sumDistance = 0;
+            game.players[i].stats.knockouts = 0;
+            game.players[i].stats.chipsLost = 0;
+            game.players[i].stats.highestCombo = 0;
+            game.players[i].stats.largestKnockout = 0;
 		};
 		
 		setIdleTimeout(game);
