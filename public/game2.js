@@ -83,6 +83,10 @@ function getChipSVG(chips, color) {
 }
 
 function getTimeLeftSVG() {
+    if (game.timeLeftTurn === null) 
+        return "<svg viewBox='0 0 500 100'>" + 
+			"<polygon points='0,0 0,100 500,100 500,0' style='fill:black;stroke:black;stroke-width:2' />" + 
+			"</svg>"
 	var mult = game.timeLeftTurn*1000/game.idleTimeout;
 	return "<svg viewBox='0 0 500 100'>" + 
 			"<polygon points='0,0 0,100 " + mult*500 + ",100 " + mult*500 + ",0' style='fill:black;stroke:black;stroke-width:2' />" + 
