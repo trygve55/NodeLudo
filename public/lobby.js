@@ -146,7 +146,7 @@ function readyUnready() {
 
 function updateReadyButton() {
 	if (inQueue === -1) {
-		$("#readyBtn").text("Ready");
+		$("#readyBtn").text(" Ready ");
 	} else {
 		$("#readyBtn").text("Unready");
 	}
