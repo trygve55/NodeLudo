@@ -88,8 +88,13 @@ app.post('/rest/lobby', function (req, res) {
 		}, 1000);
 	} else if (req.body.action == "spectating") {
 		playerAuth.setSpectating(req.decoded.playerId, true);
+	} else if (req.body.action === "unready") {
+		console.log("Unready not implemented.");
+		playerAuth.setReady(req.decoded.playerId, false);
 	}
+	
 	io.emit('lobby', "");
+	res.send();
 });
 
 app.use('/rest/game', function (req, res, next) {
