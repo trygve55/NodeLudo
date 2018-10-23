@@ -69,6 +69,6 @@ $(document).ready(function() {
 	});
 	
 	validateToken(function(valid) {
-		if (valid) window.location.href = "/lobby";
+		if (valid) window.location.href = baseUrl + "lobby";
 	});
 });
