@@ -92,10 +92,12 @@ router.post('/rest/lobby', function (req, res) {
 				io.emit('lobby', "");
 			}
 		}, 1000);
-	} else if (req.body.action == "spectating") {
-		playerAuth.setSpectating(req.decoded.playerId, true);
+	} else if (req.body.action === "unready") {
+		playerAuth.setReady(req.decoded.playerId, false);
 	}
+	
 	io.emit('lobby', "");
+	res.send();
 });
 
 router.use('/rest/game', function (req, res, next) {
