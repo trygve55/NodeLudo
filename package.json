@@ -1,6 +1,14 @@
 {
 	"name": "NodeLudo",
-	"version": "0.0.1",
+	"version": "0.1.0",
+	"scripts": {
+		"start": "node main.js"
+	},
+	"description": "Online multiplayer Ludo made with Node.js.",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/trygve55/NodeLudo.git"
+	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
 		"clone": "^1.0.4",
