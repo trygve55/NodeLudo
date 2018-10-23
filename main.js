@@ -10,19 +10,22 @@ var express = require('express'),
 
 var app = require('express')()
   , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server, {path: config.baseUrl + 'socket.io'});
   
 app.start = app.listen = function(){
   return server.listen.apply(server, arguments)
 }
 
-app.start(config.port)
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+
+var router = express.Router();
+router.use(express.static(path.join(__dirname, 'public')));
+app.use(config.baseUrl, router);
+
+app.start(config.port);
 
 console.log("Server started on port " + config.port + ".");
 
@@ -37,37 +40,40 @@ var defaultGameSettings = {
     boardSize: 4
 }
 
-app.get('/rest/game', function (req, res) {
+router.get('/rest/game', function (req, res) {
+    if (req.query.gameId >= games.length)
+        return res.status(404).send();
+    
 	games[req.query.gameid].timeLeftTurn = (
 		(games[req.query.gameid] && games[req.query.gameid].status == 1) ? 
 		((games[req.query.gameid].idleTimeout - ((new Date()).getTime() - games[req.query.gameid].lastMoveTime.getTime()))/1000) : 0);
 	res.json(games[req.query.gameid]);
 });
 
-app.get('/', function (req, res) {
-	res.render('createNickname');
+router.get('/', function (req, res) {
+	res.render('createNickname', {'baseUrl' : config.baseUrl});
 });
 
-app.get('/lobby', function (req, res, next) {	
-	res.render('lobby');
+router.get('/lobby', function (req, res, next) {	
+	res.render('lobby', {'baseUrl' : config.baseUrl});
 });
 
-app.get('/game', function (req, res) {
-	res.render('game2');
+router.get('/game', function (req, res) {
+	res.render('game2', {'baseUrl' : config.baseUrl});
 });
 
-app.use('/rest/lobby', function (req, res, next) {
+router.use('/rest/lobby', function (req, res, next) {
 	playerAuth.auth(req, res, next);
 });
 
-app.get('/rest/lobby', function (req, res) {
+router.get('/rest/lobby', function (req, res) {
 	res.json({
 		success: true,
 		players: playerAuth.getLobbyPlayers()
 	});
 });
 
-app.post('/rest/lobby', function (req, res) {
+router.post('/rest/lobby', function (req, res) {
 	if (req.body.action == "startGame") {
 		var readyPlayers = playerAuth.getReadyPlayers()
 		if (readyPlayers.length)startGame(readyPlayers, defaultGameSettings);
@@ -92,11 +98,11 @@ app.post('/rest/lobby', function (req, res) {
 	io.emit('lobby', "");
 });
 
-app.use('/rest/game', function (req, res, next) {
+router.use('/rest/game', function (req, res, next) {
 	playerAuth.auth(req, res, next);
 });
 
-app.post('/rest/game', function (req, res) {	
+router.post('/rest/game', function (req, res) {	
 	
     let before = clone(games[req.query.gameid]);
     
@@ -134,15 +140,15 @@ app.post('/rest/game', function (req, res) {
 	res.send("test");	
 });
 
-app.use('/rest/games', function (req, res, next) {
+router.use('/rest/games', function (req, res, next) {
 	playerAuth.auth(req, res, next);
 });
 
-app.get('/rest/games', function (req, res) {	
+router.get('/rest/games', function (req, res) {	
 	res.json(games);
 });
 
-app.post('/rest/regPlayer', function (req, res) {
+router.post('/rest/regPlayer', function (req, res) {
 	
 	req.body.playerName = validator.escape(req.body.playerName);
 	
@@ -167,25 +173,25 @@ app.post('/rest/regPlayer', function (req, res) {
 
 });
 
-app.use('/rest/players', function (req, res, next) {
+router.use('/rest/players', function (req, res, next) {
 	playerAuth.auth(req, res, next);
 });
 
-app.delete('/rest/player', function (req, res) {
+router.delete('/rest/player', function (req, res) {
 	playerAuth[player] = null;
 	io.emit('lobby', "");
 });
 
-app.use('/rest/active', function (req, res, next) {
+router.use('/rest/active', function (req, res, next) {
 	playerAuth.auth(req, res, next);
 });
 
-app.post('/rest/active', function (req, res) {
+router.post('/rest/active', function (req, res) {
 	playerAuth.playerActive(req.decoded.playerId);
 	res.send("ok");
 });
 
-app.post('/rest/playerExists', function (req, res) {
+router.post('/rest/playerExists', function (req, res) {
 
 	if (playerAuth.playerExists(req.body.playerName)) {
 		res.json({ 
@@ -200,7 +206,7 @@ app.post('/rest/playerExists', function (req, res) {
 	}
 });
 
-app.get('/rest/login', function (req, res) {	
+router.get('/rest/login', function (req, res) {	
 	playerAuth.auth(req, res, function() {
 		res.json({'valid' : true})
 	});

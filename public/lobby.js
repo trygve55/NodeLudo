@@ -1,4 +1,4 @@
-var socket = io(window.location.host);
+var socket = io(window.location.host, {path: baseUrl + 'socket.io'});
 
 socket.on('lobby', function(msg){
 	updateLobby();
@@ -11,7 +11,7 @@ socket.on('gamestart', function(msg){
 	for (var i = 1;i < msg.length;i++) if (parseInt(msg[i]) == localStorage.playerId) joinGame = true;
 	
 	if (joinGame) {
-		window.location.href = "game?gameid=" + args[0];
+		window.location.href = baseUrl + "game?gameid=" + args[0];
 	}
 });
 
@@ -22,7 +22,7 @@ socket.on('connect_error', function(err) {
 
 function sendActiveSignal() {
     jQuery.ajax({
-        url: "/rest/active?token="+ localStorage.token,
+        url: baseUrl + "rest/active?token="+ localStorage.token,
         type: "POST",
         data: JSON.stringify({}),
         contentType: 'application/json; charset=utf-8',
@@ -32,7 +32,7 @@ function sendActiveSignal() {
 
 function updateLobby() {
 	jQuery.ajax({
-		url: "/rest/lobby?token="+ localStorage.token,
+		url: baseUrl + "rest/lobby?token="+ localStorage.token,
 		type: "GET",
 
 		contentType: 'application/json; charset=utf-8',
@@ -55,7 +55,7 @@ function updateLobby() {
 	});
 	
 	jQuery.ajax({
-		url: "/rest/games?token="+ localStorage.token,
+		url: baseUrl + "rest/games?token="+ localStorage.token,
 		type: "GET",
 
 		contentType: 'application/json; charset=utf-8',
@@ -81,7 +81,7 @@ function updateLobby() {
 						for (var j = 0;j < resultData[i].winners.length;j++) string += (j+1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].players.length - 1 == j) ? "" : ", ");
 					}
 					jQuery('<button/>', {
-						href: "/game?gameid=" + resultData[i].gameId,
+						href: baseUrl + "game?gameid=" + resultData[i].gameId,
 						rel: 'internal',
 						class: 'well',
 						text: string,
@@ -105,7 +105,7 @@ $(document).ready(function() {
 	
 	$("#startGame").click(function () {
 		jQuery.ajax({
-			url: "/rest/lobby?token="+ localStorage.token,
+			url: baseUrl + "rest/lobby?token="+ localStorage.token,
 			type: "POST",
 			data: JSON.stringify({action: "startGame"}),
 			contentType: 'application/json; charset=utf-8',
@@ -115,7 +115,7 @@ $(document).ready(function() {
 	
 	$("#readyBtn").click(function () {		
 		jQuery.ajax({
-			url: "/rest/lobby?token="+ localStorage.token,
+			url: baseUrl + "rest/lobby?token="+ localStorage.token,
 			type: "POST",
 			data: JSON.stringify({action: "ready"}),
 			contentType: 'application/json; charset=utf-8',

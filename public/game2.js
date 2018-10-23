@@ -1,7 +1,7 @@
 var isPlayer = 0;
 
 var game = null,
-    socket = io(window.location.host);
+    socket = io(window.location.host, {path: baseUrl + 'socket.io'});;
 
 var drawedAt = [], 
     prevPossible = [],
@@ -27,7 +27,7 @@ socket.on('update', function(msg){
 socket.on('gamestop', function(msg){
 	if (msg == getUrlVars().gameid) {
 		setTimeout(function() {
-			window.location.href = "/lobby";
+			window.location.href = baseUrl + "lobby";
 		}, 6000);	
 	}
 });
@@ -51,7 +51,7 @@ function updateGameWebSocket(patchString) {
 
 function updateGame(cb) {
 	jQuery.ajax({
-		url: "/rest/game/?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: baseUrl + "rest/game/?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "GET",
 		
 		contentType: 'application/json; charset=utf-8',
@@ -102,7 +102,7 @@ function gameLogic(pos, chipsToMove) {
 	if (game.status != 1) return;
 
 	jQuery.ajax({
-		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "POST",
 		data: JSON.stringify({
 			'pos': pos,
@@ -124,7 +124,7 @@ function sendChatMessage(chatmessage) {
 	if (game.status != 1) return;
 
 	jQuery.ajax({
-		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "POST",
 		data: JSON.stringify({
 			'chatmessage': chatmessage
@@ -145,7 +145,7 @@ function leaveGame() {
 	if (game.status != 1) return;
 
 	jQuery.ajax({
-		url: "/rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
+		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
 		type: "POST",
 		data: JSON.stringify({
 			'leave': true,
@@ -356,7 +356,7 @@ function autoPlay() {
 
 function validateToken(next) {
 	jQuery.ajax({
-		url: "/rest/login/?token="+ localStorage.token,
+		url: baseUrl + "rest/login/?token=" + localStorage.token,
 		type: "GET",
 		
 		contentType: 'application/json; charset=utf-8',
@@ -370,7 +370,7 @@ function validateToken(next) {
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
-		if (!valid) window.location.href = "/";
+		if (!valid) window.location.href = baseUrl;
 	});
     
     updateGame(function(){

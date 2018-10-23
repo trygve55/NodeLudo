@@ -2,7 +2,7 @@ function validate() {
 	var newText = "";
 		
 	jQuery.ajax({
-		url: "/rest/playerExists",
+		url: baseUrl + "rest/playerExists",
 		type: "POST",
 		data: JSON.stringify({"playerName": $("#playerName").val()}),
 
@@ -26,7 +26,7 @@ function validate() {
 
 function submit() {
 	jQuery.ajax({
-		url: "/rest/regPlayer",
+		url: baseUrl + "rest/regPlayer",
 		type: "POST",
 		data: JSON.stringify({"playerName": $("#playerName").val()}),
 
@@ -47,7 +47,7 @@ function submit() {
 
 function validateToken(next) {
 	jQuery.ajax({
-		url: "/rest/login/?token="+ localStorage.token,
+		url: baseUrl + "rest/login/?token="+ localStorage.token,
 		type: "GET",
 		
 		contentType: 'application/json; charset=utf-8',

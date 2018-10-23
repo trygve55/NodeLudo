@@ -74,13 +74,13 @@ setInterval(function() {
 }, config.lobbyTimeoutCheckInterval);
 
 function auth(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
+	var token = req.body.token || req.query.token;
 
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {      
 			if (err) {
 				res.status(200).send({ 
-					redirect: '/'
+					redirect: config.baseUrl
 				});
 				
 			} else {
@@ -91,7 +91,7 @@ function auth(req, res, next) {
 		});
 	} else  {
 		res.status(200).send({ 
-			redirect: '/'
+			redirect: config.baseUrl
 		});
 		
 	}
