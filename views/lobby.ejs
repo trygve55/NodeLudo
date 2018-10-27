@@ -2,77 +2,86 @@
 <head>
     <script language="JavaScript">var baseUrl = "<%= baseUrl %>"</script>
     <script src="<%= baseUrl %>libs/jquery.min.js"></script>
-	<script src="<%= baseUrl %>libs/socket.io.js"></script>
+    <script src="<%= baseUrl %>libs/socket.io.js"></script>
     <script type="text/javascript" src="<%= baseUrl %>lobby.js"></script>
-	<script type="text/javascript" src="<%= baseUrl %>libs/bootstrap.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="<%= baseUrl %>libs/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="<%= baseUrl %>game.css"/>
+    <script type="text/javascript" src="<%= baseUrl %>libs/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%= baseUrl %>libs/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="<%= baseUrl %>game.css"/>
 </head>
 <body>
 <!-- <img src="https://tihlde.org/assets/2014/02/1911034_10152187302837052_1812648138_o.jpg" style="width: 100vw; height: 20vw;"> -->
 <div class="row" style="top: 50%;">
-	<div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-		<div class="panel panel-default">
-			<div class="panel-heading"><b>Players in lobby</b></div>
-			<div class="panel-body">
-				<div id="players"></div>
-			</div>
-		</div>
-	</div>
+    <div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Players in lobby</b></div>
+            <div class="panel-body">
+                <div id="players"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row" style="top: 50%;">
-	<div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-		<div class="panel panel-default">
-			<div class="panel-heading"><b>Ready Players</b></div>
-			<div class="panel-body">
-				<div id="readyPlayers"></div>
-			</div>
-			<div class="panel-footer">
-				<div>
-					<button id="startGame" style="width: 20%">Start Game</button>
-					<button id="readyBtn" style="width: 20%">Ready</button>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Ready Players</b></div>
+            <div class="panel-body">
+                <div id="readyPlayers"></div>
+            </div>
+            <div class="panel-footer">
+                <div>
+                    <button id="startGame" style="width: 20%">Start Game</button>
+                    <button id="readyBtn" style="width: 20%">Ready</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row">
-	<div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-		<div class="panel panel-default">
-			<div class="panel-heading"><b>Ongoing games</b></div>
-			<div id="ongoingGames" class="panel-body">
-				
-			</div>
-			<div class="panel-footer">
-				Click on a game to spectate.
-			</div>
-		</div>
-	</div>
+    <div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Ongoing games</b></div>
+            <div id="ongoingGames" class="panel-body">
+
+            </div>
+            <div class="panel-footer">
+                Click on a game to spectate.
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row">
-	<div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-		<div class="panel panel-default">
-			<div class="panel-heading"><b>Previous games</b></div>
-			<div id="previousGames" class="panel-body">
-				
-			</div>
-		</div>
-	</div>
+    <div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Previous games</b></div>
+            <div id="previousGames" class="panel-body">
+
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row">
-	<div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-		<div class="panel panel-default">
-			<div class="panel-heading"><b>Regler</b></div>
-			<div class="panel-body">
-				<ol>
-					<li>En spiller får tre kast når han/hun ikke har noen brikker ute på brettet. Hvis spilleren får en sekser så kan han/hun flytte ut en brikke og får et nytt kast.</li>
-                    <li>Når en brikke fra en spiller lander på en brikke fra en annen spiller så blir brikken(e) som blir landet på slått ut. Men hvis brikken som blir landet på står på et felt av sin egen farge så er den trygg.</li>
+    <div class="lobby-box col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Regler</b></div>
+            <div class="panel-body">
+                <ol>
+                    <li>En spiller får tre kast når han/hun ikke har noen brikker ute på brettet. Hvis spilleren får en
+                        sekser så kan han/hun flytte ut en brikke og får et nytt kast.
+                    </li>
+                    <li>Når en brikke fra en spiller lander på en brikke fra en annen spiller så blir brikken(e) som
+                        blir landet på slått ut. Men hvis brikken som blir landet på står på et felt av sin egen farge
+                        så er den trygg.
+                    </li>
                     <li>Når e spiller kaster en sekser så får han/hun et ekstra kast.</li>
-                    <li>For å flytte brikken inn i mål så må terningen være nøyaktig, hvis den er høyere så kan ikke brikken flyttes.</li>
-                    <li>Når flere brikker fra samme spiller er på samme rute så kan spilleren velge å flytte flere eller alle av brikkene sammen.</li>
-				</ol>
-			</div>
-		</div>
-	</div>
+                    <li>For å flytte brikken inn i mål så må terningen være nøyaktig, hvis den er høyere så kan ikke
+                        brikken flyttes.
+                    </li>
+                    <li>Når flere brikker fra samme spiller er på samme rute så kan spilleren velge å flytte flere eller
+                        alle av brikkene sammen.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
 </div>
 </body>

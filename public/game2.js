@@ -463,14 +463,16 @@ $(document).ready(function() {
     });
 	
 	$(document).keydown(function(e) {
-		if(e.keyCode == 32 && isTurn()) {
+		if(e.keyCode === 32 && isTurn()) {
 			if (!game.waitingForMove &&  isTurn()) {
 				gameLogic(92, 1);
 				animateDice(game.lastDice, 350);
 			}
-			else if (game.posiblePos.length == 1) {
+			else if (game.posiblePos.length === 1) {
 				gameLogic(game.posiblePos[0], 1);
 			}	
+		} else if (e.keyCode === 9) {
+			console.log("Tab")
 		}
 	});
 });
