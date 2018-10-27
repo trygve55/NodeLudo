@@ -367,6 +367,18 @@ function validateToken(next) {
 	});
 }
 
+function getStatsFormatted(playerIndex) {
+    let content = "<div style='width: 200px'>";
+    content += "Total Distance: " + game.players[playerIndex].stats.totalDistance + "<br>";
+    content += "Sum Distance: " + game.players[playerIndex].stats.sumDistance + "<br>";
+    content += "Knockouts: " + game.players[playerIndex].stats.knockouts + "<br>";
+    content += "Largest Knockouts: " + game.players[playerIndex].stats.largestKnockout + "<br>";
+    content += "Chips lost: " + game.players[playerIndex].stats.chipsLost + "<br>";
+    content += "Highest 6-combo: " + game.players[playerIndex].stats.highestCombo;
+    content += "</div>";
+    return content;
+}
+
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
@@ -413,7 +425,7 @@ $(document).ready(function() {
 					content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i+1) + "); removePopover();' style='width:100px'>Move " + (i+1) + " chip</botton>" + ((i < chipsOn) ? "<br>" : "");
 				}
 				
-				removePopover()
+				removePopover();
 				$("<div class='active-popover contain-over' style='position: relative; z-index: 2; margin-top: -50px;'></div>").appendTo(this);
 				$(".active-popover").popover({
 					placement : 'right',
@@ -427,52 +439,66 @@ $(document).ready(function() {
 		});
 	}
 
-	setInterval(function() {
-		drawMultiStackUpdate();	
-		
-	}, 1000);
-	
-	setInterval(function() {
-        if (game === null) return;
-		$("#timeLeftText").html(getTimeLeftSVG());
-		if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
-		if (game.status != 1) game.timeLeftTurn = 0;
-	}, 50);
-	
-	$("#nextPlayer").click(function() {
-		for (var i = 0;i < 30; i++) ludoAI();
-	});
-    
-	$("#runGame").click(function() {
-		autoPlay();
-	});
-    
-	$("#diceBottom").click(function() {
-		playerThrowDice();
-	});
-    
-    $("#leaveGame").click(function() {
-		leaveGame();
-	});
-    
-    $("#chatTypeBox").keyup(function(event) {
-        if (event.keyCode === 13 && $("#chatTypeBox").val().length !== 0) {
-            sendChatMessage($("#chatTypeBox").val());
-            $("#chatTypeBox").val("");
-        }
+	//Player stats popups
+	for (let i = 0; i < 4; i++) {
+        $("#playerText-" + i).click(function () {
+            removePopover();
+            $("<a class='active-popover contain-over' style='position: relative; z-index: 2; margin-left: -10.5vh;'></a>").appendTo(this);
+            $(".active-popover").popover({
+                placement : 'left',
+                container : $(".active-popover"),
+                html : true,
+                content: getStatsFormatted(i),
+                trigger: "click",
+                animation:true
+            }).popover('show');
+        });
+    }
+
+    setInterval(function() {
+    drawMultiStackUpdate();
+
+    }, 1000);
+
+    setInterval(function() {
+    if (game === null) return;
+    $("#timeLeftText").html(getTimeLeftSVG());
+    if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
+    if (game.status != 1) game.timeLeftTurn = 0;
+    }, 50);
+
+    $("#nextPlayer").click(function() {
+    for (var i = 0;i < 30; i++) ludoAI();
     });
-	
-	$(document).keydown(function(e) {
-		if(e.keyCode === 32 && isTurn()) {
-			if (!game.waitingForMove &&  isTurn()) {
-				gameLogic(92, 1);
-				animateDice(game.lastDice, 350);
-			}
-			else if (game.posiblePos.length === 1) {
-				gameLogic(game.posiblePos[0], 1);
-			}	
-		} else if (e.keyCode === 9) {
-			console.log("Tab")
-		}
-	});
+
+    $("#runGame").click(function() {
+    autoPlay();
+    });
+
+    $("#diceBottom").click(function() {
+    playerThrowDice();
+    });
+
+    $("#leaveGame").click(function() {
+    leaveGame();
+    });
+
+    $("#chatTypeBox").keyup(function(event) {
+    if (event.keyCode === 13 && $("#chatTypeBox").val().length !== 0) {
+        sendChatMessage($("#chatTypeBox").val());
+        $("#chatTypeBox").val("");
+    }
+    });
+
+    $(document).keydown(function(e) {
+    if(e.keyCode === 32 && isTurn()) {
+        if (!game.waitingForMove &&  isTurn()) {
+            gameLogic(92, 1);
+            animateDice(game.lastDice, 350);
+        }
+        else if (game.posiblePos.length === 1) {
+            gameLogic(game.posiblePos[0], 1);
+        }
+    }
+    });
 });
