@@ -109,6 +109,8 @@ router.post('/rest/game', function (req, res) {
     let before = clone(games[req.query.gameid]);
 
     if (req.body.chatmessage != null) {
+        if (req.body.chatmessage.length > 80) return res.status(422).send("Too long message");
+
         console.log("Player: " + req.decoded.playerId + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
         gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, "#ffffff");
 
