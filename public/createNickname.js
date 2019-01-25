@@ -59,14 +59,18 @@ function validateToken(next) {
 }
 
 $(document).ready(function () {
-    $("#playerName").on("change keyup", function () {
+    $("#playerName").on("change keyup", function (event) {
         validate();
+        if (event.keyCode === 13) {
+            submit();
+        }
     });
 
-    $("#form").submit(function () {
-        event.preventDefault();
+    $("#createNickname").click(function () {
         submit();
     });
+
+
 
     validateToken(function (valid) {
         if (valid) window.location.href = baseUrl + "lobby";
