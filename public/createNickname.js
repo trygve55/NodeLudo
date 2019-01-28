@@ -17,7 +17,7 @@ function validate() {
     });
 
     if ($("#playerName").val().length > 16) newText = "Name max length is 16 charaters.";
-    if ($("#playerName").val().length < 3) newText = "Name most be at least 3 charaters.";
+    if ($("#playerName").val().length < 3) newText = "Name must be at least 3 charaters.";
 
     $("#nicknameError").text(newText);
 
