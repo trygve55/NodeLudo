@@ -64,8 +64,8 @@ var chatMessagesRecentNum = [];
 
 setInterval(function () {
     if (updateLobbyCallback) {
-        var changes = false;
-        for (var i = 0; i < players.length; i++) {
+        let changes = false;
+        for (let i = 0; i < players.length; i++) {
             if (players[i].inLobby && new Date() - players[i].lastActiveLobby > config.lobbyTimeout) {
                 players[i].inLobby = false;
                 players[i].ready = false;
@@ -103,18 +103,17 @@ function auth(req, res, next) {
 
 function playerActive(playerId) {
     players[playerId].lastActiveLobby = new Date();
-    if (players[playerId].inLobby == true) return;
+    if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
     console.log("player: " + players[playerId].playerName + " is active. ");
     updateLobbyCallback(players);
 }
 
 function playerExists(playerName) {
-    var nicknameInUse = false;
-    for (var i = 0; i < players.length; i++) {
-        if (players[i].playerName == playerName) nicknameInUse = true;
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].playerName === playerName) return true;
     }
-    return nicknameInUse;
+    return false;
 }
 
 function addPlayer(playerName) {
@@ -135,7 +134,7 @@ function addPlayer(playerName) {
     playersIncrement++;
 
     var token = jwt.sign(payload, config.secret, {
-        expiresIn: "10 days" // expires in 240 hours
+        expiresIn: "10 days"
     });
 
     playerToken.push(token);
@@ -144,23 +143,23 @@ function addPlayer(playerName) {
 }
 
 function addPlayerToLobby(playerId) {
-    if (players[playerId].inLobby == true) return;
+    if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
     console.log("player: " + players[playerId].playerName + " is active. ");
     updateLobbyCallback(players);
 }
 
 function getLobbyPlayers() {
-    var lobbyPlayers = [];
-    for (var i = 0; i < players.length; i++) {
+    let lobbyPlayers = [];
+    for (let i = 0; i < players.length; i++) {
         if (players[i].inLobby) lobbyPlayers[lobbyPlayers.length] = players[i];
     }
     return lobbyPlayers;
 }
 
 function getReadyPlayers() {
-    var readyPlayers = [];
-    for (var i = 0; i < players.length; i++) {
+    let readyPlayers = [];
+    for (let i = 0; i < players.length; i++) {
         if (players[i].ready) readyPlayers[readyPlayers.length] = players[i];
     }
     return readyPlayers;
@@ -168,12 +167,12 @@ function getReadyPlayers() {
 
 function authPlayer(req, res) {
     console.log(req.decoded);
-    player[playerId].lastActiveLobby = new Date();
-    return (playerToken[playerId] == token);
+    players[playerId].lastActiveLobby = new Date();
+    return (playerToken[playerId] === token);
 }
 
 function getPlayerId(playerName) {
-    for (var i = 0; i < players.length; i++) if (playerName == players[i].playerName) return players[i].playerId;
+    for (let i = 0; i < players.length; i++) if (playerName === players[i].playerName) return players[i].playerId;
 
     return;
 }

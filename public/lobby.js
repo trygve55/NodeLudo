@@ -154,12 +154,11 @@ function updateReadyButton() {
 
 function logout() {
     localStorage.token = undefined;
-    window.location.href = baseUrl + "index";
+    window.location.href = baseUrl;
 }
 
 $(document).ready(function () {
     updateLobby();
-
 
     $("#startGame").click(function () {
         jQuery.ajax({
@@ -173,6 +172,10 @@ $(document).ready(function () {
 
     $("#readyBtn").click(function () {
         readyUnready();
+    });
+
+    $("#logoutBtn").click(function () {
+        logout();
     });
 
     sendActiveSignal();

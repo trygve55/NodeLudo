@@ -20,7 +20,7 @@ socket.on('gamestop', function(msg){
 });
 
 
-var dicePos = 166
+var dicePos = 166;
 		
 var drawedAt = [], prevPossible = [], prevPossibleNext = [], multipleStackDrawCounter = 0, chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 

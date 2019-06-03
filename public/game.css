@@ -211,6 +211,21 @@ body {
     overflow: hide;
 }
 
+#logoutBtn {
+    float: right;
+}
+
 .chatMessage {
     word-wrap: break-word;
+}
+
+.title {
+    margin: auto;
+    text-align: center;
+    font-size: 75px;
+    font-weight: bold;
+}
+
+.nicknameError {
+    margin-top: 10px;
 }

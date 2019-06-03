@@ -74,7 +74,7 @@ function updateGame(cb) {
 }
 
 function getChipSVG(chips, color) {
-	var chip = [];
+	let chip = [];
 	chip[0] = "<svg width='100%' height='100%' viewBox='0 0 250 250'> <circle cx='125' cy='125' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='105' r='80' stroke='black' stroke-width='6' fill=? /> </svg>";
 	chip[1] = "<svg width='100%' height='100%' viewBox='0 0 250 250'> <circle cx='125' cy='135' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='115' r='80' stroke='black' stroke-width='6' fill=? /> <circle cx='125' cy='95' r='80' stroke='black' stroke-width='6' fill=? /></svg>"
 	chip[2] = "<svg width='100%' height='100%' viewBox='0 0 250 250'> <circle cx='125' cy='155' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='135' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='115' r='80' stroke='black' stroke-width='6' fill=? /><circle cx='125' cy='95' r='80' stroke='black' stroke-width='6' fill=? /></svg>";
@@ -140,7 +140,7 @@ function sendChatMessage(chatmessage) {
 	});
 }
 
-function leaveGame() {
+function giveUp() {
 	
 	if (game.status != 1) return;
 
@@ -163,7 +163,8 @@ function leaveGame() {
 
 
 function draw() {
-	
+
+	updateLeaveBtn();
     //chatlog
     $("#chatLog").empty();
     
@@ -176,13 +177,7 @@ function draw() {
     
     if ($("#chatLog").prop("scrollHeight") - $("#chatLog").scrollTop() < 180)
         $("#chatLog").scrollTop($("#chatLog").prop("scrollHeight"));
-    
-    //give up button
-    if (isActivePlayer())
-        $("#leaveGame").css('visibility','visible');
-    else
-        $("#leaveGame").css('visibility','hidden');
-    
+
     //clear all chips
 	while (drawedAt.length != 0) {
 		$("#pos-"+drawedAt.pop()).empty();
@@ -367,6 +362,14 @@ function validateToken(next) {
 	});
 }
 
+function updateLeaveBtn() {
+	if (isActivePlayer()) {
+        $("#leaveGame").text("Give up")
+	} else {
+        $("#leaveGame").text("To lobby")
+	}
+}
+
 function getStatsFormatted(playerIndex) {
     let content = "<div style='width: 200px'>";
     content += "Total Distance: " + game.players[playerIndex].stats.totalDistance + "<br>";
@@ -407,7 +410,7 @@ $(document).ready(function() {
 	
 	$( window ).trigger("resize");
 	
-	for (var i = 0; i < 100; i++) {
+	for (let i = 0; i < 100; i++) {
 		$("#pos-"+i).data("pos", i);
 		$("#pos-"+i).click(function() {
 			
@@ -461,26 +464,31 @@ $(document).ready(function() {
     }, 1000);
 
     setInterval(function() {
-    if (game === null) return;
-    $("#timeLeftText").html(getTimeLeftSVG());
-    if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
-    if (game.status != 1) game.timeLeftTurn = 0;
+		if (game === null) return;
+		$("#timeLeftText").html(getTimeLeftSVG());
+		if (game.timeLeftTurn > 0) game.timeLeftTurn -= 0.05;
+		if (game.status != 1) game.timeLeftTurn = 0;
     }, 50);
 
     $("#nextPlayer").click(function() {
-    for (var i = 0;i < 30; i++) ludoAI();
+    	for (let i = 0;i < 30; i++) ludoAI();
     });
 
     $("#runGame").click(function() {
-    autoPlay();
+    	autoPlay();
     });
 
     $("#diceBottom").click(function() {
-    playerThrowDice();
+    	playerThrowDice();
     });
 
     $("#leaveGame").click(function() {
-    leaveGame();
+    	if (isActivePlayer()) {
+            giveUp();
+		} else {
+            window.location.href = baseUrl + "lobby";
+		}
+
     });
 
     $("#chatTypeBox").keyup(function(event) {

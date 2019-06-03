@@ -38,7 +38,7 @@ var defaultGameSettings = {
     idleKickTurns: 4,
     idleKickTurnsTotal: 7,
     boardSize: 4
-}
+};
 
 router.get('/rest/game', function (req, res) {
     if (req.query.gameId >= games.length)
@@ -75,17 +75,17 @@ router.get('/rest/lobby', function (req, res) {
 
 router.post('/rest/lobby', function (req, res) {
     if (req.body.action == "startGame") {
-        var readyPlayers = playerAuth.getReadyPlayers()
+        let readyPlayers = playerAuth.getReadyPlayers()
         if (readyPlayers.length) startGame(readyPlayers, defaultGameSettings);
     } else if (req.body.action == "ready") {
         playerAuth.setReady(req.decoded.playerId, true);
 
         setTimeout(function () {
-            var readyPlayers = playerAuth.getReadyPlayers();
+            let readyPlayers = playerAuth.getReadyPlayers();
 
             if (readyPlayers.length >= 4) {
-                var playersToGame = [];
-                for (var i = 0; i < 4; i++) {
+                let playersToGame = [];
+                for (let i = 0; i < 4; i++) {
                     playersToGame[i] = readyPlayers[i];
                 }
                 startGame(playersToGame, defaultGameSettings);
@@ -135,8 +135,8 @@ router.post('/rest/game', function (req, res) {
             sendUpdate(games[req.query.gameid].gameId);
             break;
         case 2:
-            var players = games[req.query.gameid].players;
-            for (var i = 0; i < players.length; i++) playerAuth.setIngame(players[i].playerId, false);
+            let players = games[req.query.gameid].players;
+            for (let i = 0; i < players.length; i++) playerAuth.setIngame(players[i].playerId, false);
             sendUpdate(games[req.query.gameid].gameId);
             break;
         default:
@@ -165,7 +165,7 @@ router.post('/rest/regPlayer', function (req, res) {
     if (req.body.playerName.length < 3 || req.body.playerName.length > 16)
         return res.json({success: false, message: 'Nickname is to long or to short.'});
 
-    var token = playerAuth.addPlayer(req.body.playerName);
+    let token = playerAuth.addPlayer(req.body.playerName);
 
     res.json({
         success: true,
@@ -226,19 +226,19 @@ function startGame(players, idleTimeout) {
 
     if (players.length < 2) return;
 
-    var newPlayers = [];
+    let newPlayers = [];
 
     while (players.length > 0) {
-        var index = Math.floor(Math.random() * (players.length));
+        let index = Math.floor(Math.random() * (players.length));
         newPlayers.push(players[index]);
         players.splice(index, 1);
     }
 
     players = newPlayers;
 
-    var game = gameJS.createGame(players, idleTimeout);
+    let game = gameJS.createGame(players, idleTimeout);
 
-    for (var i = 0; i < players.length; i++) {
+    for (let i = 0; i < players.length; i++) {
         playerAuth.setIngame(players[i].playerId, true);
         playerAuth.setReady(players[i].playerId, false);
         playerAuth.setInLobby(players[i].playerId, false);
@@ -249,8 +249,8 @@ function startGame(players, idleTimeout) {
 
     console.log("Starting game id: " + game.gameId);
 
-    var string = game.gameId;
-    for (var i = 0; i < players.length; i++) string += " " + players[i].playerId;
+    let string = game.gameId;
+    for (let i = 0; i < players.length; i++) string += " " + players[i].playerId;
     setTimeout(function () {
         io.emit('gamestart', string);
     }, 200);
