@@ -6,12 +6,12 @@ socket.on('lobby', function (msg) {
 });
 
 socket.on('gamestart', function (msg) {
-    var args = msg.split(" ");
+    let args = msg.split(" ");
 
-    var joinGame = false;
-    for (var i = 1; i < msg.length; i++) if (parseInt(msg[i]) == localStorage.playerId) joinGame = true;
+    console.log(msg);
 
-    if (joinGame) {
+    for (let i = 1; i < msg.length; i++) if (parseInt(msg[i]) == localStorage.playerId) {
+        console.log("test join");
         window.location.href = baseUrl + "game?gameid=" + args[0];
     }
 });
@@ -40,11 +40,11 @@ function updateLobby() {
         success: function (resultData) {
             if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 
-            var readyPlayers = 0;
+            let readyPlayers = 0;
 
             $("#players").empty();
             $("#readyPlayers").empty();
-            for (var i = 0; i < resultData.players.length; i++) {
+            for (let i = 0; i < resultData.players.length; i++) {
                 if (resultData.players[i].ready) {
                     readyPlayers++;
                     if (resultData.players[i].playerId == localStorage.playerId) {
@@ -60,10 +60,8 @@ function updateLobby() {
 
             if (readyPlayers >= 2) {
                 $("#startGame").prop("disabled", false).css('opacity', 1.0);
-                ;
             } else {
                 $("#startGame").prop("disabled", true).css('opacity', 0.5);
-                ;
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -85,8 +83,8 @@ function updateLobby() {
                 $("#ongoingGames").empty();
                 $("#previousGames").empty();
 
-                for (var i = 0; i < resultData.length; i++) {
-                    var string = "";
+                for (let i = 0; i < resultData.length; i++) {
+                    let string = "";
 
                     if (resultData[i].status == 1) {
                         string += "Players: ";
@@ -152,6 +150,11 @@ function updateReadyButton() {
     } else {
         $("#readyBtn").text("Unready");
     }
+}
+
+function logout() {
+    localStorage.token = undefined;
+    window.location.href = baseUrl + "index";
 }
 
 $(document).ready(function () {
