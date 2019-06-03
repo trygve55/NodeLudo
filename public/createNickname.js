@@ -17,7 +17,7 @@ function validate() {
     });
 
     if ($("#playerName").val().length > 16) newText = "Name max length is 16 charaters.";
-    if ($("#playerName").val().length < 3) newText = "Name most be at least 3 charaters.";
+    if ($("#playerName").val().length < 3) newText = "Name must be at least 3 charaters.";
 
     $("#nicknameError").text(newText);
 
@@ -59,14 +59,18 @@ function validateToken(next) {
 }
 
 $(document).ready(function () {
-    $("#playerName").on("change keyup", function () {
+    $("#playerName").on("change keyup", function (event) {
         validate();
+        if (event.keyCode === 13) {
+            submit();
+        }
     });
 
-    $("#form").submit(function () {
-        event.preventDefault();
+    $("#createNickname").click(function () {
         submit();
     });
+
+
 
     validateToken(function (valid) {
         if (valid) window.location.href = baseUrl + "lobby";

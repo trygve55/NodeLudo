@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<%= baseUrl %>game.css"/>
     <script language="JavaScript">var baseUrl = "<%= baseUrl %>"</script>
+    <title>NodeLudo - Register</title>
 </head>
 <body>
 <!-- <img src="https://tihlde.org/assets/2014/02/1911034_10152187302837052_1812648138_o.jpg" style="width: 100vw; height: 20vw;"> -->
@@ -15,15 +16,15 @@
         <div class="panel panel-default">
             <div class="panel-heading"><b>Register nickname</b></div>
             <div class="panel-body">
-                <form id="form">
+                <div id="form">
                     <div class="form-group">
                         <label for="playerName">Nickname:</label>
                         <input type="text" class="form-control" id="playerName" name="playerName">
                     </div>
-                    <button id="createNickname" type="submit" class="btn btn-default" style="float: right"
+                    <button id="createNickname" class="btn btn-default" style="float: right"
                             disabled="true">Next
                     </button>
-                </form>
+                </div>
                 <text id="nicknameError" style="color:red; font-weight: bold;"></text>
             </div>
         </div>

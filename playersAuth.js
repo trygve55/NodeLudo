@@ -47,6 +47,9 @@ module.exports = {
     },
     addPlayerToLobby: function (playerId) {
         return addPlayerToLobby(playerId);
+    },
+    chatDOSCheck: function (playerId) {
+        return chatDOSCheck(playerId);
     }
 };
 
@@ -57,6 +60,7 @@ var playersIncrement = 0;
 var players = [];
 var playerToken = [];
 var updateLobbyCallback;
+var chatMessagesRecentNum = [];
 
 setInterval(function () {
     if (updateLobbyCallback) {
@@ -176,4 +180,18 @@ function getPlayerId(playerName) {
 
 function getPlayerById(playerId) {
     return players[playerId];
+}
+
+function chatDOSCheck(playerId) {
+    if (chatMessagesRecentNum[playerId] === undefined) chatMessagesRecentNum[playerId] = 0;
+
+    if (chatMessagesRecentNum[playerId] === 0) {
+        setTimeout(function () {
+            chatMessagesRecentNum[playerId] = 0;
+        }, 10000)
+    }
+
+    chatMessagesRecentNum[playerId]++;
+
+    return chatMessagesRecentNum[playerId] > 3;
 }
