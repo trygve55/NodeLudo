@@ -222,10 +222,33 @@ body {
 .title {
     margin: auto;
     text-align: center;
-    font-size: 75px;
+    font-size: 105px;
     font-weight: bold;
 }
 
 .nicknameError {
     margin-top: 10px;
+}
+
+[class*='title-'] {
+    display: inline-block;
+    margin: 0;
+    -webkit-text-stroke-width: 2.2px;
+    -webkit-text-stroke-color: black;
+}
+
+.title-blue {
+    color: blue;
+}
+
+.title-red {
+    color: red;
+}
+
+.title-green {
+    color: green;
+}
+
+.title-yellow {
+    color: yellow;
 }
