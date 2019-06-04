@@ -1,5 +1,6 @@
 var socket = io(window.location.host, {path: baseUrl + 'socket.io'}),
-    inQueue = -1;
+    inQueue = -1,
+    lastReadyChange = new Date();
 
 socket.on('lobby', function (msg) {
     updateLobby();
@@ -86,15 +87,15 @@ function updateLobby() {
                 for (let i = 0; i < resultData.length; i++) {
                     let string = "";
 
-                    if (resultData[i].status == 1) {
+                    if (resultData[i].status === 1) {
                         string += "Players: ";
-                        for (var j = 0; j < resultData[i].players.length; j++) string += resultData[i].players[j].playerName + ((resultData[i].players.length - 1 == j) ? "" : ", ");
+                        for (var j = 0; j < resultData[i].players.length; j++) string += resultData[i].players[j].playerName + ((resultData[i].players.length - 1 === j) ? "" : ", ");
                         string += " on turn " + resultData[i].turn + ".";
                         if (resultData[i].winners.length > 0) string += " Winners: "
-                        for (var j = 0; j < resultData[i].winners.length; j++) string += (j + 1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].winners.length - 1 == j) ? "" : ", ");
+                        for (var j = 0; j < resultData[i].winners.length; j++) string += (j + 1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].winners.length - 1 === j) ? "" : ", ");
                     } else {
                         string += "Winners: ";
-                        for (var j = 0; j < resultData[i].winners.length; j++) string += (j + 1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].winners.length - 1 == j) ? "" : ", ");
+                        for (var j = 0; j < resultData[i].winners.length; j++) string += (j + 1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].winners.length - 1 === j) ? "" : ", ");
                     }
                     jQuery('<button/>', {
                         href: baseUrl + "game?gameid=" + resultData[i].gameId,
@@ -117,6 +118,9 @@ function updateLobby() {
 }
 
 function readyUnready() {
+    if (new Date() - lastReadyChange < 400) return;
+    lastReadyChange = new Date();
+
     if (inQueue === -1) {
         jQuery.ajax({
             url: baseUrl + "rest/lobby?token=" + localStorage.token,
