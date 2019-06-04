@@ -429,7 +429,7 @@ $(document).ready(function() {
                     chipsIn = 0;
 
                 for (let i = 0;i < game.players[game.playerTurn].chips.length;i++) {
-                    if (game.players[game.playerTurn].chips[i].pos == $(this).data("pos") && game.players[game.playerTurn].chips[i].distance >= 53) chipsIn++;
+                    if (game.players[game.playerTurn].chips[i].pos == $(this).data("pos") && game.players[game.playerTurn].chips[i].distance === 53) chipsIn++;
                 }
 
                 if (chipsIn > 0 && chipsIn !== chipsOn) {
