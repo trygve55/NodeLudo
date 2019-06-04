@@ -415,18 +415,40 @@ $(document).ready(function() {
 		$("#pos-"+i).click(function() {
 			
 			let chipsOn = 0;
-			for (var i = 0;i < game.posiblePos.length;i++) {
+
+			for (let i = 0;i < game.posiblePos.length;i++) {
 				if (game.posiblePos[i] == $(this).data("pos")) chipsOn++;
 			}
+
 			if (chipsOn == 1 || $(this).data("pos") == 92) {
 				gameLogic($(this).data("pos"), 1);
 				if ($(this).data("pos") == 92 && !game.waitingForMove &&  isTurn()) animateDice(game.lastDice, 350);
-			}
-			else if (chipsOn > 1 && isTurn()){				
-				var content = "";
-				for (var i = 0;i < chipsOn;i++) {
-					content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i+1) + "); removePopover();' style='width:100px'>Move " + (i+1) + " chip</botton>" + ((i < chipsOn) ? "<br>" : "");
-				}
+			} else if (chipsOn > 1 && isTurn()){
+
+				let content = "",
+                    chipsIn = 0;
+
+                for (let i = 0;i < game.players[game.playerTurn].chips.length;i++) {
+                    if (game.players[game.playerTurn].chips[i].pos == $(this).data("pos") && game.players[game.playerTurn].chips[i].distance >= 53) chipsIn++;
+                }
+
+                if (chipsIn > 0 && chipsIn !== chipsOn) {
+
+                    for (let i = 0; i < chipsIn; i++) {
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:120px; padding-left: 0px'>Move " + (i + 1) + " chip in</botton><br>";
+                    }
+
+                    for (let i = 0; i < chipsOn - chipsIn; i++) {
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:120px'>Move " + (i + 1) + " chip out</botton>" + ((i < chipsOn) ? "<br>" : "");
+                    }
+
+                } else {
+
+                    for (let i = 0; i < chipsOn; i++) {
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:100px'>Move " + (i + 1) + " chip</botton>" + ((i < chipsOn) ? "<br>" : "");
+                    }
+
+                }
 				
 				removePopover();
 				$("<div class='active-popover contain-over' style='position: relative; z-index: 2; margin-top: -50px;'></div>").appendTo(this);
