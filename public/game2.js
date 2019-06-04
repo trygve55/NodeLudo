@@ -97,7 +97,7 @@ function dice() {
 	return Math.floor(Math.random() * 6) + 1  
 }
 
-function gameLogic(pos, chipsToMove) {
+function gameLogic(pos, chipsToMove, moveChipsIn) {
 	
 	if (game.status != 1) return;
 
@@ -106,7 +106,8 @@ function gameLogic(pos, chipsToMove) {
 		type: "POST",
 		data: JSON.stringify({
 			'pos': pos,
-			'chipsToMove': chipsToMove
+			'chipsToMove': chipsToMove,
+            'moveChipsIn': moveChipsIn
 		}),
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
