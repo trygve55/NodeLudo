@@ -3,7 +3,7 @@ module.exports = {
         return Math.floor(Math.random() * 6) + 1
     },
 
-    gameLogic: function (game, playerId, pos, chipsToMove) {
+    gameLogic: function (game, playerId, pos, chipsToMove, moveChipsIn) {
 
         if (game.status !== 1 || game.isProcessing || game.players[game.playerTurn].playerId !== playerId) return false;
 
@@ -18,7 +18,13 @@ module.exports = {
             let chipsOnPos = [];
 
             for (let i = 0; i < 4; i++) {
-                if (game.players[game.playerTurn].chips[i].pos === pos) chipsOnPos.push(i);
+                if (game.players[game.playerTurn].chips[i].pos === pos && (
+                    moveChipsIn === undefined ||
+                    (moveChipsIn && game.players[game.playerTurn].chips[i].distance === 53) ||
+                    (moveChipsIn === false && game.players[game.playerTurn].chips[i].distance !== 53))
+                ) {
+                    chipsOnPos.push(i);
+                }
             }
 
             if (chipsOnPos.length > 0) {

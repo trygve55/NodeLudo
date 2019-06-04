@@ -99,7 +99,7 @@ function dice() {
 
 function gameLogic(pos, chipsToMove, moveChipsIn) {
 	
-	if (game.status != 1) return;
+	if (game.status !== 1) return;
 
 	jQuery.ajax({
 		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
@@ -111,7 +111,7 @@ function gameLogic(pos, chipsToMove, moveChipsIn) {
 		}),
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
-			
+            if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
@@ -122,7 +122,7 @@ function gameLogic(pos, chipsToMove, moveChipsIn) {
 
 function sendChatMessage(chatmessage) {
 	
-	if (game.status != 1) return;
+	if (game.status !== 1) return;
 
 	jQuery.ajax({
 		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
@@ -132,7 +132,7 @@ function sendChatMessage(chatmessage) {
 		}),
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
-			
+            if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
@@ -143,7 +143,7 @@ function sendChatMessage(chatmessage) {
 
 function giveUp() {
 	
-	if (game.status != 1) return;
+	if (game.status !== 1) return;
 
 	jQuery.ajax({
 		url: baseUrl + "rest/game?token="+ localStorage.token + "&gameid=" + getUrlVars().gameid,
@@ -153,7 +153,7 @@ function giveUp() {
 		}),
 		contentType: 'application/json; charset=utf-8',
 		success: function(resultData) {
-			
+            if (typeof resultData.redirect == 'string') window.location = resultData.redirect;
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
 		},
@@ -436,11 +436,11 @@ $(document).ready(function() {
                 if (chipsIn > 0 && chipsIn !== chipsOn) {
 
                     for (let i = 0; i < chipsIn; i++) {
-                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:120px; padding-left: 0px'>Move " + (i + 1) + " chip in</botton><br>";
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", true); removePopover();' style='width:120px; padding-left: 0px'>Move " + (i + 1) + " chip in</botton><br>";
                     }
 
                     for (let i = 0; i < chipsOn - chipsIn; i++) {
-                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:120px'>Move " + (i + 1) + " chip out</botton>" + ((i < chipsOn) ? "<br>" : "");
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", false); removePopover();' style='width:120px'>Move " + (i + 1) + " chip out</botton>" + ((i < chipsOn) ? "<br>" : "");
                     }
 
                 } else {

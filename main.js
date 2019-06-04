@@ -41,11 +41,11 @@ var defaultGameSettings = {
 };
 
 router.get('/rest/game', function (req, res) {
-    if (req.query.gameId >= games.length)
+    if (req.query.gameid >= games.length)
         return res.status(404).send();
 
     games[req.query.gameid].timeLeftTurn = (
-        (games[req.query.gameid] && games[req.query.gameid].status == 1) ?
+        (games[req.query.gameid] && games[req.query.gameid].status === 1) ?
             ((games[req.query.gameid].idleTimeout - ((new Date()).getTime() - games[req.query.gameid].lastMoveTime.getTime())) / 1000) : 0);
     res.json(games[req.query.gameid]);
 });
@@ -130,7 +130,7 @@ router.post('/rest/game', function (req, res) {
         return res.send("posted");
     }
 
-    switch (gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove)) {
+    switch (gameJS.gameLogic(games[req.query.gameid], req.decoded.playerId, req.body.pos, req.body.chipsToMove, req.body.moveChipsIn)) {
         case 1:
             sendUpdate(games[req.query.gameid].gameId);
             break;
