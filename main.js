@@ -170,7 +170,7 @@ router.post('/rest/regPlayer', function (req, res) {
         return res.json({success: false, message: 'Nickname is to long or to short.'});
 
     //Find country, local geoip lookup
-    let ip = req.connection.remoteAddress;
+    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     let lookup = geoip.lookup(ip);
     let country = null;
     if (lookup) country = lookup.country;
