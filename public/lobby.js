@@ -59,8 +59,8 @@ function updateLobby() {
                 });
 
                 if (resultData.players[i].country) {
-                    playerDiv[0].innerHTML += '<img src="' + baseUrl + 'flags/' + resultData.players[i].country + '.png" ' +
-                        'alt="Country ' + resultData.players[i].country + '" height="22" width="auto" align="right">';
+                    playerDiv[0].innerHTML += '<img src="' + baseUrl + 'flags/' + resultData.players[i].country.toLowerCase()
+                        + '.png" alt="Country ' + resultData.players[i].country + '" height="22" width="auto" align="right">';
                 }
 
                 playerDiv.appendTo($((resultData.players[i].ready) ? "#readyPlayers" : "#players"));
