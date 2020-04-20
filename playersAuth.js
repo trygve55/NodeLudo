@@ -1,7 +1,7 @@
 module.exports = {
 
-    addPlayer: function (playerName) {
-        return addPlayer(playerName);
+    addPlayer: function (playerName, country) {
+        return addPlayer(playerName, country);
     },
     playerExists: function (playerName) {
         return playerExists(playerName);
@@ -118,7 +118,7 @@ function playerExists(playerName) {
     return false;
 }
 
-function addPlayer(playerName) {
+function addPlayer(playerName, country) {
     const payload = {
         playerName: playerName,
         playerId: playersIncrement
@@ -131,7 +131,8 @@ function addPlayer(playerName) {
         ready: false,
         spectating: false,
         inLobby: true,
-        lastActiveLobby: new Date()
+        lastActiveLobby: new Date(),
+        country: country
     });
     playersIncrement++;
 

@@ -1,6 +1,7 @@
 let express = require('express'),
     path = require('path'),
     bodyParser = require('body-parser'),
+    geoip = require('geoip-country'),
     gameJS = require('./import'),
     playerAuth = require('./playersAuth'),
     validator = require('validator'),
@@ -168,7 +169,13 @@ router.post('/rest/regPlayer', function (req, res) {
     if (req.body.playerName.length < 3 || req.body.playerName.length > 16)
         return res.json({success: false, message: 'Nickname is to long or to short.'});
 
-    let token = playerAuth.addPlayer(req.body.playerName);
+    //Find country, local geoip lookup
+    let ip = req.connection.remoteAddress;
+    let lookup = geoip.lookup(ip);
+    let country = null;
+    if (lookup) country = lookup.country;
+
+    let token = playerAuth.addPlayer(req.body.playerName, country);
 
     res.json({
         success: true,
@@ -176,7 +183,7 @@ router.post('/rest/regPlayer', function (req, res) {
         token: token
     });
 
-    logger.info("Player " + req.body.playerName + " joined lobby.")
+    logger.info("Player " + req.body.playerName + " from " + country + " joined lobby.");
 
     io.emit('lobby', "");
 

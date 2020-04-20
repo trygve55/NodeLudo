@@ -53,10 +53,17 @@ function updateLobby() {
                         updateReadyButton();
                     }
                 }
-                jQuery('<div/>', {
+                let playerDiv = jQuery('<div/>', {
                     class: 'well',
                     text: resultData.players[i].playerName
-                }).appendTo($((resultData.players[i].ready) ? "#readyPlayers" : "#players"));
+                });
+
+                if (resultData.players[i].country) {
+                    playerDiv[0].innerHTML += '<img src="flags/' + resultData.players[i].country + '.png" ' +
+                        'alt="Country ' + resultData.players[i].country + '" height="22" width="auto" align="right">';
+                }
+
+                playerDiv.appendTo($((resultData.players[i].ready) ? "#readyPlayers" : "#players"));
             }
 
             if (readyPlayers >= 2) {
