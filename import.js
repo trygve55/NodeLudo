@@ -85,7 +85,7 @@ module.exports = {
 
 
         } else if (pos === 92) {
-            updatePosible(game);
+            updatePossible(game);
 
             let allOnStart = true;
             for (let i = 0; i < 4; i++) if (game.players[game.playerTurn].chips[i].distance > 0 && game.players[game.playerTurn].chips[i].distance !== 59) allOnStart = false;
@@ -213,7 +213,7 @@ function checkWin(game) {
     }
 
     if (allIn && game.players[game.playerTurn].status === 0) {
-        console.log("Game " + ": Player " + game.players[game.playerTurn].playerName + " won. ");
+        logger.info("Game " + ": Player " + game.players[game.playerTurn].playerName + " won. ");
         game.players[game.playerTurn].status = 2;
         game.winners.push(game.playerTurn);
     }
@@ -310,7 +310,7 @@ function knockoutOn(game, pos) {
                         chipsKnockedOut++;
                         recalcSumDistance(game, i);
                     }
-                    if (i == 1 && pos != 29) {
+                    if (i === 1 && pos !== 29) {
                         game.players[i].chips[j].pos = j + i * 4;
                         game.players[i].chips[j].distance = 0;
                         game.players[game.playerTurn].stats.knockouts++;
@@ -318,7 +318,7 @@ function knockoutOn(game, pos) {
                         chipsKnockedOut++;
                         recalcSumDistance(game, i);
                     }
-                    if (i == 2 && pos != 42) {
+                    if (i === 2 && pos !== 42) {
                         game.players[i].chips[j].pos = j + i * 4;
                         game.players[i].chips[j].distance = 0;
                         game.players[game.playerTurn].stats.knockouts++;
@@ -326,7 +326,7 @@ function knockoutOn(game, pos) {
                         chipsKnockedOut++;
                         recalcSumDistance(game, i);
                     }
-                    if (i == 3 && pos != 55) {
+                    if (i === 3 && pos !== 55) {
                         game.players[i].chips[j].pos = j + i * 4;
                         game.players[i].chips[j].distance = 0;
                         game.players[game.playerTurn].stats.knockouts++;
@@ -359,7 +359,7 @@ function nextPlayer(game) {
     let hasWon = false;
 
     for (let i = 0; i < game.winners.length; i++) {
-        if (game.playerTurn == game.winners[i]) hasWon = true;
+        if (game.playerTurn === game.winners[i]) hasWon = true;
     }
 
     if (!hasWon && game.players[game.playerTurn].status === 0) {
@@ -391,7 +391,7 @@ function recalcSumDistance(game, playerIndex) {
     for (let i = 0; i < 4; i++) game.players[playerIndex].stats.sumDistance += game.players[playerIndex].chips[i].distance;
 }
 
-function updatePosible(game) {
+function updatePossible(game) {
     game.posiblePos.length = 0;
     game.posiblePosDest.length = 0;
 

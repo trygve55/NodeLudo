@@ -1,4 +1,4 @@
-var express = require('express'),
+let express = require('express'),
     path = require('path'),
     bodyParser = require('body-parser'),
     gameJS = require('./import'),
@@ -8,32 +8,35 @@ var express = require('express'),
     jsonpatch = require('fast-json-patch'),
     config = require('./config');
 
-var app = require('express')()
+const logger = require('pino')();
+
+let app = require('express')()
     , server = require('http').createServer(app)
     , io = require('socket.io').listen(server, {path: config.baseUrl + 'socket.io'});
 
 app.start = app.listen = function () {
     return server.listen.apply(server, arguments)
-}
+};
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 
-var router = express.Router();
+let router = express.Router();
 router.use(express.static(path.join(__dirname, 'public')));
 app.use(config.baseUrl, router);
 
 app.start(config.port);
 
-console.log("Server started on port " + config.port + ".");
+//console.log("Server started on port " + config.port + ".");
+logger.info("Server started on port " + config.port + ".");
 
-var games = [], gamesObserver = [];
+let games = [], gamesObserver = [];
 gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
-var defaultGameSettings = {
+let defaultGameSettings = {
     idleTimeout: 20000,
     idleKickTurns: 4,
     idleKickTurnsTotal: 7,
@@ -74,10 +77,10 @@ router.get('/rest/lobby', function (req, res) {
 });
 
 router.post('/rest/lobby', function (req, res) {
-    if (req.body.action == "startGame") {
-        let readyPlayers = playerAuth.getReadyPlayers()
+    if (req.body.action === "startGame") {
+        let readyPlayers = playerAuth.getReadyPlayers();
         if (readyPlayers.length) startGame(readyPlayers, defaultGameSettings);
-    } else if (req.body.action == "ready") {
+    } else if (req.body.action === "ready") {
         playerAuth.setReady(req.decoded.playerId, true);
 
         setTimeout(function () {
@@ -111,9 +114,9 @@ router.post('/rest/game', function (req, res) {
     if (req.body.chatmessage != null) {
         if (req.body.chatmessage.length > 80) return res.status(422).send("Too long message");
 
-        if (playerAuth.chatDOSCheck(req.decoded.playerId)) return res.status(422).send("Too many messages");;
+        if (playerAuth.chatDOSCheck(req.decoded.playerId)) return res.status(422).send("Too many messages");
 
-        console.log("Player: " + req.decoded.playerId + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
+        logger.info("Player: " + playerAuth.getPlayerById(req.decoded.playerId).playerName + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
         gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, "#ffffff");
 
         sendUpdate(games[req.query.gameid].gameId);
@@ -122,7 +125,7 @@ router.post('/rest/game', function (req, res) {
     }
 
     if (req.body.leave != null) {
-        console.log("Player: " + req.decoded.playerId + " left game '" + req.query.gameid);
+        logger.info("Player: " + playerAuth.getPlayerById(req.decoded.playerId).playerName + " left game '" + req.query.gameid);
         gameJS.leaveGame(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId));
 
         sendUpdate(games[req.query.gameid].gameId);
@@ -173,7 +176,7 @@ router.post('/rest/regPlayer', function (req, res) {
         token: token
     });
 
-    console.log("Player " + req.body.playerName + " joined lobby.")
+    logger.info("Player " + req.body.playerName + " joined lobby.")
 
     io.emit('lobby', "");
 
@@ -247,7 +250,7 @@ function startGame(players, idleTimeout) {
     games.push(game);
     gamesObserver.push(jsonpatch.observe(game));
 
-    console.log("Starting game id: " + game.gameId);
+    logger.info("Starting game id: " + game.gameId + " with players: " + players);
 
     let string = game.gameId;
     for (let i = 0; i < players.length; i++) string += " " + players[i].playerId;

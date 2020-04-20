@@ -56,6 +56,8 @@ module.exports = {
 var jwt = require('jsonwebtoken');
 var config = require('./config');
 
+const logger = require('pino')();
+
 var playersIncrement = 0;
 var players = [];
 var playerToken = [];
@@ -70,7 +72,7 @@ setInterval(function () {
                 players[i].inLobby = false;
                 players[i].ready = false;
                 changes = true;
-                console.log("player: " + players[i].playerName + " is inactive. ");
+                logger.info("player: " + players[i].playerName + " is inactive in lobby. ");
             }
         }
         if (changes) updateLobbyCallback(players);
@@ -105,7 +107,7 @@ function playerActive(playerId) {
     players[playerId].lastActiveLobby = new Date();
     if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
-    console.log("player: " + players[playerId].playerName + " is active. ");
+    logger.info("player: " + players[playerId].playerName + " is active. ");
     updateLobbyCallback(players);
 }
 
@@ -133,7 +135,7 @@ function addPlayer(playerName) {
     });
     playersIncrement++;
 
-    var token = jwt.sign(payload, config.secret, {
+    let token = jwt.sign(payload, config.secret, {
         expiresIn: "10 days"
     });
 
@@ -145,7 +147,7 @@ function addPlayer(playerName) {
 function addPlayerToLobby(playerId) {
     if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
-    console.log("player: " + players[playerId].playerName + " is active. ");
+    logger.info("player: " + players[playerId].playerName + " is active in lobby.");
     updateLobbyCallback(players);
 }
 
@@ -166,15 +168,13 @@ function getReadyPlayers() {
 }
 
 function authPlayer(req, res) {
-    console.log(req.decoded);
+    logger.info("authPlayer:" + req.decoded);
     players[playerId].lastActiveLobby = new Date();
     return (playerToken[playerId] === token);
 }
 
 function getPlayerId(playerName) {
     for (let i = 0; i < players.length; i++) if (playerName === players[i].playerName) return players[i].playerId;
-
-    return;
 }
 
 function getPlayerById(playerId) {
