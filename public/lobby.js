@@ -59,7 +59,7 @@ function updateLobby() {
                 });
 
                 if (resultData.players[i].country) {
-                    playerDiv[0].innerHTML += '<img src="flags/' + resultData.players[i].country + '.png" ' +
+                    playerDiv[0].innerHTML += '<img src=' + baseUrl + '"flags/' + resultData.players[i].country + '.png" ' +
                         'alt="Country ' + resultData.players[i].country + '" height="22" width="auto" align="right">';
                 }
 
