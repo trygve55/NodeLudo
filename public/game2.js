@@ -395,9 +395,14 @@ $(document).ready(function() {
 	
 	$( window ).resize(function()  {
 		$('.grid').css({'width': 'auto'});
-		var size = $('.grid').width();
-		if (size > document.body.clientHeight - 10) {
-			size = document.body.clientHeight - 10;
+		let size = $('.grid').width();
+		let heightMargin = 10;
+        if($(window).width() < 992) {
+            heightMargin += $("#sidePanel").height();
+        }
+
+		if (size > document.body.clientHeight - heightMargin) {
+			size = document.body.clientHeight - heightMargin;
 			$('.grid').css({'width': size +'px'});
 		} else {
 			//$('.grid').css({'width': 'auto'});
