@@ -194,6 +194,7 @@ module.exports = {
     }
 };
 
+const logger = require('pino')();
 var io, playerAuth;
 var gameIdIncrement = 0;
 
@@ -213,7 +214,6 @@ function checkWin(game) {
     }
 
     if (allIn && game.players[game.playerTurn].status === 0) {
-        logger.info("Game " + ": Player " + game.players[game.playerTurn].playerName + " won. ");
         game.players[game.playerTurn].status = 2;
         game.winners.push(game.playerTurn);
     }
@@ -238,6 +238,10 @@ function checkWin(game) {
         }
 
         game.status = 2;
+
+        logger.info("Game id: " + game.gameId + ", with players " + playerAuth.playerListToString(game.players) +
+            " ended, " + game.players[game.playerTurn].playerName + " won.");
+
         io.emit('gamestop', "" + game.gameId);
         if (gameTimeout[game.gameId])
             clearTimeout(gameTimeout[game.gameId]);
@@ -260,6 +264,7 @@ function setIdleTimeout(game) {
         if (game.players[game.playerTurn].turnsIdle === game.idleKickTurns || game.players[game.playerTurn].turnsIdleTotal === game.idleKickTurnsTotal) {
             game.players[game.playerTurn].status = 1;
             playerAuth.setIngame(game.players[game.playerTurn].playerId, false);
+            logger.info("Game id: " + game.gameId + ", player " + game.players[game.playerTurn].playerName + " kicked for inactivity.");
             checkWin(game);
         }
         nextPlayer(game);

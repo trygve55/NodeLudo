@@ -50,6 +50,9 @@ module.exports = {
     },
     chatDOSCheck: function (playerId) {
         return chatDOSCheck(playerId);
+    },
+    playerListToString: function (players) {
+        return playerListToString(players);
     }
 };
 
@@ -72,7 +75,7 @@ setInterval(function () {
                 players[i].inLobby = false;
                 players[i].ready = false;
                 changes = true;
-                logger.info("player: " + players[i].playerName + " is inactive in lobby. ");
+                logger.info("player: " + players[i].playerName + " is inactive in lobby.");
             }
         }
         if (changes) updateLobbyCallback(players);
@@ -107,7 +110,7 @@ function playerActive(playerId) {
     players[playerId].lastActiveLobby = new Date();
     if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
-    logger.info("player: " + players[playerId].playerName + " is active. ");
+    logger.info("Player " + players[playerId].playerName + " is active in lobby.");
     updateLobbyCallback(players);
 }
 
@@ -148,7 +151,7 @@ function addPlayer(playerName, country) {
 function addPlayerToLobby(playerId) {
     if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
-    logger.info("player: " + players[playerId].playerName + " is active in lobby.");
+    logger.info("Player " + players[playerId].playerName + " is active in lobby.");
     updateLobbyCallback(players);
 }
 
@@ -180,6 +183,19 @@ function getPlayerId(playerName) {
 
 function getPlayerById(playerId) {
     return players[playerId];
+}
+
+function playerListToString(players) {
+    let output = "";
+    for (let i = 0; i < players.length;i++) {
+        output +=  players[i].playerName;
+        if (i + 2 === players.length) {
+            output += " and "
+        } else if (i + 1 !== players.length) {
+            output += ", "
+        }
+    }
+    return output;
 }
 
 function chatDOSCheck(playerId) {

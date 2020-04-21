@@ -257,7 +257,7 @@ function startGame(players, idleTimeout) {
     games.push(game);
     gamesObserver.push(jsonpatch.observe(game));
 
-    logger.info("Starting game id: " + game.gameId + " with players: " + players);
+    logger.info("Starting game id: " + game.gameId + " with players: " + playerAuth.playerListToString(players));
 
     let string = game.gameId;
     for (let i = 0; i < players.length; i++) string += " " + players[i].playerId;
