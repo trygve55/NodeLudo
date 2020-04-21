@@ -383,6 +383,10 @@ function getStatsFormatted(playerIndex) {
     return content;
 }
 
+function isMobileView() {
+	return $(window).width() < 992
+}
+
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
@@ -397,7 +401,7 @@ $(document).ready(function() {
 		$('.grid').css({'width': 'auto'});
 		let size = $('.grid').width();
 		let heightMargin = 10;
-        if($(window).width() < 992) {
+        if(isMobileView()) {
             heightMargin += $("#sidePanel").height();
         }
 
@@ -441,17 +445,17 @@ $(document).ready(function() {
                 if (chipsIn > 0 && chipsIn !== chipsOn) {
 
                     for (let i = 0; i < chipsIn; i++) {
-                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", true); removePopover();' style='width:120px; padding-left: 0px'>Move " + (i + 1) + " chip in</botton><br>";
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", true); removePopover();' style='width:120px; font-size:150%; padding-left: 0px'>Move " + (i + 1) + " chip" + ((i) ? ('s') : ('')) + " in</botton><br>";
                     }
 
                     for (let i = 0; i < chipsOn - chipsIn; i++) {
-                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", false); removePopover();' style='width:120px'>Move " + (i + 1) + " chip out</botton>" + ((i < chipsOn) ? "<br>" : "");
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + ", false); removePopover();' style='width:120px; font-size:150%;'>Move " + (i + 1) + " chip" + ((i) ? ('s') : ('')) + " out</botton>" + ((i < chipsOn) ? "<br>" : "");
                     }
 
                 } else {
 
                     for (let i = 0; i < chipsOn; i++) {
-                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:100px'>Move " + (i + 1) + " chip</botton>" + ((i < chipsOn) ? "<br>" : "");
+                        content += "<button onclick='gameLogic(" + $(this).data("pos") + ', ' + (i + 1) + "); removePopover();' style='width:100px; font-size:150%;'>Move " + (i + 1) + " chip" + ((i) ? ('s') : ('')) + "</botton>" + ((i < chipsOn) ? "<br>" : "");
                     }
 
                 }
@@ -474,9 +478,9 @@ $(document).ready(function() {
 	for (let i = 0; i < 4; i++) {
         $("#playerText-" + i).click(function () {
             removePopover();
-            $("<a class='active-popover contain-over' style='position: relative; z-index: 2; margin-left: -10.5vh;'></a>").appendTo(this);
+            $("<a class='active-popover contain-over' style='position: relative; z-index: 2; margin-left: " + (isMobileView() ? ('10.5vh') : ('-10.5vh')) + ";'></a>").appendTo(this);
             $(".active-popover").popover({
-                placement : 'left',
+                placement : (isMobileView()) ? ('right') : ('left'),
                 container : $(".active-popover"),
                 html : true,
                 content: getStatsFormatted(i),
