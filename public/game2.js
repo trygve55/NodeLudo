@@ -387,6 +387,8 @@ function isMobileView() {
 	return $(window).width() < 992
 }
 
+
+
 $(document).ready(function() {
 	
 	validateToken(function(valid) {
@@ -400,7 +402,7 @@ $(document).ready(function() {
 	$( window ).resize(function()  {
 		$('.grid').css({'width': 'auto'});
 		let size = $('.grid').width();
-		let heightMargin = 10;
+		let heightMargin = 6;
         if(isMobileView()) {
             heightMargin += $("#sidePanel").height();
         }
@@ -412,10 +414,6 @@ $(document).ready(function() {
 			//$('.grid').css({'width': 'auto'});
 		}
 		$('.grid').css({'height': size +'px'});
-		
-		setTimeout(function() {
-			//$( window ).trigger("resize");
-		}, 500);
 	});
 	
 	$( window ).trigger("resize");
@@ -491,8 +489,7 @@ $(document).ready(function() {
     }
 
     setInterval(function() {
-    drawMultiStackUpdate();
-
+    	drawMultiStackUpdate();
     }, 1000);
 
     setInterval(function() {

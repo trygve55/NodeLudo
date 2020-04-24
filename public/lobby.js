@@ -84,6 +84,7 @@ function updateLobby() {
 
         contentType: 'application/json; charset=utf-8',
         success: function (resultData) {
+
             if (resultData.length == 0) {
                 $("#ongoingGames").text("No games ongoing");
                 $("#previousGames").text("No previous games");
@@ -111,11 +112,16 @@ function updateLobby() {
                         text: string,
                         style: 'padding: 2%; width: 100%; textAlign: left; ',
                         onclick: "window.location.href=$(this).attr('href')",
-                    }).click(function () {
-                        console.log("test");
                     }).prependTo($((resultData[i].status == 1) ? "#ongoingGames" : "#previousGames"));
                 }
+
+                //Conditional showing total number of games
+                let ongoingGames = $("#ongoingGames").children().length;
+                let previousGames = $("#previousGames").children().length;
+                if (ongoingGames > 5) $("#ongoingGamesNumber").text('(' + ongoingGames + ')');
+                if (previousGames > 5) $("#previousGamesNumber").text('(' + previousGames + ')');
             }
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
         },
