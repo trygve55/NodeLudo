@@ -412,10 +412,18 @@ $(document).ready(function() {
 		if (size > document.body.clientHeight - heightMargin) {
 			size = document.body.clientHeight - heightMargin;
 			$('.grid').css({'width': size +'px'});
-		} else {
-			//$('.grid').css({'width': 'auto'});
 		}
+
 		$('.grid').css({'height': size +'px'});
+
+		//Ugly fix for random error in resize
+		setTimeout(function () {
+            console.log($('.grid').width() +" " + $('.grid').height());
+            if ($('.grid').width() !== $('.grid').height()) {
+                console.log("resize");
+                $( window ).trigger("resize");
+            }
+        }, 10);
 	});
 	
 	$( window ).trigger("resize");
