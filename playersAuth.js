@@ -188,11 +188,13 @@ function getPlayerById(playerId) {
 function playerListToString(players) {
     let output = "";
     for (let i = 0; i < players.length;i++) {
-        output +=  players[i].playerName;
-        if (i + 2 === players.length) {
-            output += " and "
-        } else if (i + 1 !== players.length) {
-            output += ", "
+        if (players[i]) {
+            output += players[i].playerName;
+            if (i + 2 === players.length) {
+                output += " and "
+            } else if (i + 1 !== players.length) {
+                output += ", "
+            }
         }
     }
     return output;

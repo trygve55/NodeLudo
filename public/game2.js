@@ -239,19 +239,21 @@ function draw() {
 	
 	chipsOnColor = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 	
-	for (var i = 0; i < game.players.length; i++) {	
-		for (var j = 0; j < 4; j++) {
-			var numOnPos = 0, pos = game.players[i].chips[j].pos;
-			for (var k = 0; k < 4; k++) {
-				if (game.players[i].chips[k].pos == game.players[i].chips[j].pos) numOnPos += 1;
-			}
-			if (pos == 16 || pos == 29 || pos == 42 || pos == 55) {
-				chipsOnColor[i][(pos - 16)/13] = numOnPos;
-			} else {
-				$("#pos-" + game.players[i].chips[j].pos).html(getChipSVG(numOnPos, chipColors[i]));
-				drawedAt.push(game.players[i].chips[j].pos);
-			}
-		}
+	for (var i = 0; i < game.players.length; i++) {
+        if (game.players[i]) {
+            for (var j = 0; j < 4; j++) {
+                var numOnPos = 0, pos = game.players[i].chips[j].pos;
+                for (var k = 0; k < 4; k++) {
+                    if (game.players[i].chips[k].pos == game.players[i].chips[j].pos) numOnPos += 1;
+                }
+                if (pos == 16 || pos == 29 || pos == 42 || pos == 55) {
+                    chipsOnColor[i][(pos - 16) / 13] = numOnPos;
+                } else {
+                    $("#pos-" + game.players[i].chips[j].pos).html(getChipSVG(numOnPos, chipColors[i]));
+                    drawedAt.push(game.players[i].chips[j].pos);
+                }
+            }
+        }
 	}
 	
 	drawMultiStackUpdate();
@@ -262,7 +264,7 @@ function drawMultiStackUpdate() {
 		
 		var playersOnPos = 0, players = [];
 		for (var j = 0; j < game.players.length; j++){
-			if (chipsOnColor[j][i]) {
+			if (game.players[i] && chipsOnColor[j][i]) {
 				playersOnPos++;
 				players.push(j);
 			}
@@ -325,7 +327,7 @@ function isTurn() {
 
 function isActivePlayer() {
     for (var i = 0; i < game.players.length; i++) 
-		if (game.players[i].playerId == localStorage.playerId && game.players[i].status === 0 && game.status === 1) 
+		if (game.players[i] && game.players[i].playerId == localStorage.playerId && game.players[i].status === 0 && game.status === 1)
             return true;
 
     return false;

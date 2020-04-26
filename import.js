@@ -152,9 +152,13 @@ module.exports = {
         game.currentCombo = 0;
 
         for (let i = 0; i < players.length; i++) {
+            let player = players[i];
+            //When playing with only two players, they start on the opposite side of each other
+            if (players.length === 2 && i === 1) i++;
+
             game.players[i] = {};
-            game.players[i].playerId = players[i].playerId;
-            game.players[i].playerName = players[i].playerName;
+            game.players[i].playerId = player.playerId;
+            game.players[i].playerName = player.playerName;
             game.players[i].chips = [];
             game.players[i].status = 0;
             game.players[i].turnsIdle = 0;
@@ -220,7 +224,7 @@ function checkWin(game) {
 
     let inactivePlayers = [];
 
-    for (let j = 0; j < game.players.length; j++) if (game.players[j].status === 1) inactivePlayers.push(j);
+    for (let j = 0; j < game.players.length; j++) if (!game.players[j] || game.players[j].status === 1) inactivePlayers.push(j);
 
     if (game.winners.length + inactivePlayers.length === game.players.length - 1) {
         for (let j = 0; j < game.players.length; j++) {
@@ -231,7 +235,7 @@ function checkWin(game) {
                 if (j === game.winners[k]) hasWon = true;
             }
 
-            if (!hasWon && game.players[j].status !== 1) {
+            if (!hasWon && game.players[j] && game.players[j].status !== 1) {
                 game.players[game.playerTurn].status = 2;
                 game.winners.push(j);
             }
@@ -280,7 +284,7 @@ function setIdleTimeout(game) {
 function leaveGame(game, player, update) {
     for (let i = 0; i < game.players.length; i++) {
 
-        if (game.players[i].playerId === player.playerId) {
+        if (game.players[i] && game.players[i].playerId === player.playerId) {
 
             game.players[i].status = 1;
             playerAuth.setIngame(player.playerId, false);
@@ -300,7 +304,7 @@ function leaveGame(game, player, update) {
 function knockoutOn(game, pos) {
     for (let i = 0; i < game.players.length; i++) {
 
-        if (i !== game.playerTurn) {
+        if (game.players[i] && i !== game.playerTurn) {
 
             let chipsKnockedOut = 0;
 
@@ -355,11 +359,12 @@ function nextPlayer(game) {
     game.currentCombo = 0;
 
     if (game.playerTurn === game.players.length) {
-
         game.turn++;
         game.playerTurn = 0;
 
     }
+
+    if (!game.players[game.playerTurn]) return nextPlayer(game);
 
     let hasWon = false;
 

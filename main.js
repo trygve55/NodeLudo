@@ -140,7 +140,7 @@ router.post('/rest/game', function (req, res) {
             break;
         case 2:
             let players = games[req.query.gameid].players;
-            for (let i = 0; i < players.length; i++) playerAuth.setIngame(players[i].playerId, false);
+            for (let i = 0; i < players.length; i++) if (players[i]) playerAuth.setIngame(players[i].playerId, false);
             sendUpdate(games[req.query.gameid].gameId);
             break;
         default:
@@ -249,9 +249,11 @@ function startGame(players, idleTimeout) {
     let game = gameJS.createGame(players, idleTimeout);
 
     for (let i = 0; i < players.length; i++) {
-        playerAuth.setIngame(players[i].playerId, true);
-        playerAuth.setReady(players[i].playerId, false);
-        playerAuth.setInLobby(players[i].playerId, false);
+        if (players[i]) {
+            playerAuth.setIngame(players[i].playerId, true);
+            playerAuth.setReady(players[i].playerId, false);
+            playerAuth.setInLobby(players[i].playerId, false);
+        }
     }
 
     games.push(game);
@@ -260,7 +262,7 @@ function startGame(players, idleTimeout) {
     logger.info("Starting game id: " + game.gameId + " with players: " + playerAuth.playerListToString(players));
 
     let string = game.gameId;
-    for (let i = 0; i < players.length; i++) string += " " + players[i].playerId;
+    for (let i = 0; i < players.length; i++) if (players[i]) string += " " + players[i].playerId;
     setTimeout(function () {
         io.emit('gamestart', string);
     }, 200);
