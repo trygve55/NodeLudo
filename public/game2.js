@@ -38,7 +38,7 @@ socket.on('connect_error', function(err) {
 });
 
 function updateGameWebSocket(patchString) {
-    var oldVersion = game.version
+    var oldVersion = game.version;
     jsonpatch.applyPatch(game,JSON.parse(patchString)).newDocument;
     
     if (game.version !== oldVersion + 1) 
@@ -169,11 +169,14 @@ function draw() {
     //chatlog
     $("#chatLog").empty();
     
-    for (var i = 0; i < game.chatMessages.length;i++) {
-        var msg = $("<div/>").addClass("chatMessage");
-        $("<div/>").text(game.chatMessages[i].player.playerName + " : ").css('width', '60px').css('display', 'inline').appendTo(msg);
-        $("<div/>").text(game.chatMessages[i].text).css('display', 'inline').appendTo(msg);
-        $("#chatLog").append(msg);
+    for (let i = 0; i < game.chatMessages.length;i++) {
+    	if (!game.chatMessages[i].visibleFor || game.chatMessages[i].visibleFor.includes(parseInt(localStorage.playerId))) {
+            let msg = $("<div/>").addClass("chatMessage");
+            if (game.chatMessages[i].player)
+            	$("<div/>").text(game.chatMessages[i].player.playerName + " : ").css('width', '60px').css('display', 'inline').appendTo(msg);
+            $("<div/>").text(game.chatMessages[i].text).css('display', 'inline').css('color', game.chatMessages[i].color).appendTo(msg);
+            $("#chatLog").append(msg);
+        }
     }
     
     if ($("#chatLog").prop("scrollHeight") - $("#chatLog").scrollTop() < 180)

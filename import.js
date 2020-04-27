@@ -148,6 +148,7 @@ module.exports = {
         game.chatMessages = [];
         game.idleTimeout = gameSettings.idleTimeout;
         game.idleKickTurns = gameSettings.idleKickTurns;
+        game.idleKickTurns = gameSettings.idleKickTurnsTotal;
         game.version = 0;
         game.currentCombo = 0;
 
@@ -204,8 +205,8 @@ var gameIdIncrement = 0;
 
 var gameTimeout = [];
 
-function addChatMessage(game, player, text, color) {
-    game.chatMessages.push({player: player, time: new Date(), text: text, color: "#ffffff"});
+function addChatMessage(game, player, text, color="#ffffff", visibleFor=null) {
+    game.chatMessages.push({player: player, time: new Date(), text: text, color: color, visibleFor: visibleFor});
     //io.emit("update", "" + game.gameId);
 }
 
@@ -265,15 +266,25 @@ function setIdleTimeout(game) {
     gameTimeout[game.gameId] = setTimeout(function () {
         game.players[game.playerTurn].turnsIdle++;
         game.players[game.playerTurn].turnsIdleTotal++;
+
         if (game.players[game.playerTurn].turnsIdle === game.idleKickTurns || game.players[game.playerTurn].turnsIdleTotal === game.idleKickTurnsTotal) {
             game.players[game.playerTurn].status = 1;
             playerAuth.setIngame(game.players[game.playerTurn].playerId, false);
+            addChatMessage(game, null, game.players[game.playerTurn].playerName + " kicked for inactivity.", "#ff0000");
             logger.info("Game id: " + game.gameId + ", player " + game.players[game.playerTurn].playerName + " kicked for inactivity.");
             checkWin(game);
+        } else {
+            //Send waring to player in chat
+            addChatMessage(
+                game,
+                null,
+                "You will be kicked from the game if idle for " + min(game.idleKickTurns - game.players[game.playerTurn].turnsIdle, game.idleKickTurnsTotal - game.players[game.playerTurn].turnsIdleTotal) + " more turns!",
+                "#ff0000",
+                [game.players[game.playerTurn].playerId]);
         }
+
         nextPlayer(game);
         game.waitingForMove = false;
-        //updatePosible(game);
         game.posiblePos = [92];
         io.emit("update", "" + game.gameId);
         if (game.status === 1)
