@@ -1,0 +1,10 @@
+th, td {
+    padding: 5px;
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.popover{
+    max-width: 100%;
+}

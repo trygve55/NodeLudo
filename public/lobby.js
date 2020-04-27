@@ -195,6 +195,11 @@ $(document).ready(function () {
         logout();
     });
 
+    $('#patch-notes').popover({
+        container: 'body',
+        html: true
+    });
+
     sendActiveSignal();
     setInterval(function () {
         sendActiveSignal();
