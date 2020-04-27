@@ -278,7 +278,7 @@ function setIdleTimeout(game) {
             addChatMessage(
                 game,
                 null,
-                "You will be kicked from the game if idle for " + min(game.idleKickTurns - game.players[game.playerTurn].turnsIdle, game.idleKickTurnsTotal - game.players[game.playerTurn].turnsIdleTotal) + " more turns!",
+                "You will be kicked from the game if idle for " + Math.min(game.idleKickTurns - game.players[game.playerTurn].turnsIdle, game.idleKickTurnsTotal - game.players[game.playerTurn].turnsIdleTotal) + " more turns!",
                 "#ff0000",
                 [game.players[game.playerTurn].playerId]);
         }
