@@ -148,7 +148,7 @@ module.exports = {
         game.chatMessages = [];
         game.idleTimeout = gameSettings.idleTimeout;
         game.idleKickTurns = gameSettings.idleKickTurns;
-        game.idleKickTurns = gameSettings.idleKickTurnsTotal;
+        game.idleKickTurnsTotal = gameSettings.idleKickTurnsTotal;
         game.version = 0;
         game.currentCombo = 0;
 

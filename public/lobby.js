@@ -7,13 +7,10 @@ socket.on('lobby', function (msg) {
 });
 
 socket.on('gamestart', function (msg) {
-    let args = msg.split(" ");
-
-    console.log(msg);
+    msg = msg.split(" ");
 
     for (let i = 1; i < msg.length; i++) if (parseInt(msg[i]) == localStorage.playerId) {
-        console.log("test join");
-        window.location.href = baseUrl + "game?gameid=" + args[0];
+        window.location.href = baseUrl + "game?gameid=" + msg[0];
     }
 });
 
@@ -97,7 +94,7 @@ function updateLobby() {
 
                     if (resultData[i].status === 1) {
                         string += "Players: ";
-                        for (var j = 0; j < resultData[i].players.length; j++) string += resultData[i].players[j].playerName + ((resultData[i].players.length - 1 === j) ? "" : ", ");
+                        for (var j = 0; j < resultData[i].players.length; j++) if (resultData[i].players[j]) string += resultData[i].players[j].playerName + ((resultData[i].players.length - 1 === j) ? "" : ", ");
                         string += " on turn " + resultData[i].turn + ".";
                         if (resultData[i].winners.length > 0) string += " Winners: "
                         for (var j = 0; j < resultData[i].winners.length; j++) string += (j + 1) + ". " + resultData[i].players[resultData[i].winners[j]].playerName + ((resultData[i].winners.length - 1 === j) ? "" : ", ");
