@@ -455,16 +455,15 @@ function updatePossible(game) {
 }
 
 function ludoAI(game) {
+    let currentPlayer = game.players[game.playerTurn];
     setTimeout(function () {
-        if (game.players[game.playerTurn].isBot) {
+        if (game.players[game.playerTurn].isBot && currentPlayer === game.players[game.playerTurn]) {
             if (game.waitingForMove && game.posiblePos.length > 0) {
                 let moved = false;
                 if (game.lastDice === 6) {
                     for (let j = 0; j < 4; j++) {
                         if (game.players[game.playerTurn].chips[j].distance === 0) {
                             gameLogic(game, game.players[game.playerTurn].playerId, game.players[game.playerTurn].chips[j].pos, 1);
-                            io.emit("update", "" + game.gameId);
-                            ludoAI(game);
                             moved = true;
                             break;
                         }
@@ -472,15 +471,14 @@ function ludoAI(game) {
                 }
                 if (!moved) {
                     gameLogic(game, game.players[game.playerTurn].playerId, game.posiblePos[0], 1);
-                    io.emit("update", "" + game.gameId);
-                    ludoAI(game);
                 }
             }
             else {
                 gameLogic(game, game.players[game.playerTurn].playerId, 92, 1);
-                io.emit("update", "" + game.gameId);
-                ludoAI(game);
             }
+
+            io.emit("update", "" + game.gameId);
+            ludoAI(game);
         }
-    }, 500);
+    }, 400);
 }
