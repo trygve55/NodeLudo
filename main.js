@@ -37,6 +37,11 @@ let games = [], gamesObserver = [];
 gameJS.setSocket(io);
 gameJS.setPlayerAuth(playerAuth);
 
+//Adding bots
+playerAuth.addPlayer("Blada Bot", null, true);
+playerAuth.addPlayer("Bludo Bot", null, true);
+playerAuth.addPlayer("Lada Bot", null, true);
+
 let defaultGameSettings = {
     idleTimeout: 20000,
     idleKickTurns: 4,
@@ -97,7 +102,59 @@ router.post('/rest/lobby', function (req, res) {
             }
         }, 1000);
     } else if (req.body.action === "unready") {
-        playerAuth.setReady(req.decoded.playerId, false);
+        let lobbyPlayers = playerAuth.getLobbyPlayers();
+
+        let nonBotPlayers = lobbyPlayers.filter(function(e) {
+            return !e.isBot;
+        }).length;
+
+        if (nonBotPlayers === 1) {
+            for (let i = 0;i < lobbyPlayers.length;i++) {
+                playerAuth.setReady(lobbyPlayers[i].playerId, false);
+            }
+        } else {
+            playerAuth.setReady(req.decoded.playerId, false);
+        }
+
+    } else if (req.body.action === "addBot") {
+        let readyPlayers = playerAuth.getReadyPlayers();
+
+        //require player to be ready for adding bots
+        if (readyPlayers.filter(function(e) {
+            return e.playerId === req.decoded.playerId;
+        }).length === 0) {
+            return res.send();
+        }
+
+        let botPlayers = playerAuth.getBotPlayers();
+        let freeBotPlayers = botPlayers.filter(function(e) {
+            return readyPlayers.indexOf(e) === -1;
+        });
+
+        playerAuth.setReady(freeBotPlayers[Math.floor(Math.random() * Math.floor(freeBotPlayers.length))].playerId, true);
+
+        setTimeout(function () {
+            let readyPlayers = playerAuth.getReadyPlayers();
+
+            if (readyPlayers.length >= 4) {
+                let playersToGame = [];
+                for (let i = 0; i < 4; i++) {
+                    playersToGame[i] = readyPlayers[i];
+                }
+                startGame(playersToGame, defaultGameSettings);
+                io.emit('lobby', "");
+            }
+        }, 1000);
+    } else if (req.body.action === "removeBot") {
+        let botPlayers = playerAuth.getBotPlayers();
+        let readyPlayers = playerAuth.getReadyPlayers();
+
+        let readyBotPlayers = botPlayers.filter(function(e) {
+            return readyPlayers.indexOf(e) > -1;
+        });
+
+        playerAuth.setReady(readyBotPlayers[Math.floor(Math.random() * Math.floor(readyBotPlayers.length))].playerId, false);
+
     }
 
     io.emit('lobby', "");

@@ -1,129 +1,10 @@
 module.exports = {
     dice: function () {
-        return Math.floor(Math.random() * 6) + 1
+        return Math.floor(Math.random() * 6) + 1;
     },
 
-    gameLogic: function (game, playerId, pos, chipsToMove, moveChipsIn) {
-
-        if (game.status !== 1 || game.isProcessing || game.players[game.playerTurn].playerId !== playerId) return false;
-
-        let returnValue = 0;
-
-        game.isProcessing = true;
-
-        resetIdleTimeout(game);
-
-        if (game.waitingForMove) {
-
-            let chipsOnPos = [];
-
-            for (let i = 0; i < 4; i++) {
-                if (game.players[game.playerTurn].chips[i].pos === pos && (
-                    moveChipsIn === undefined ||
-                    (moveChipsIn && game.players[game.playerTurn].chips[i].distance === 53) ||
-                    (moveChipsIn === false && game.players[game.playerTurn].chips[i].distance !== 53))
-                ) {
-                    chipsOnPos.push(i);
-                }
-            }
-
-            if (chipsOnPos.length > 0) {
-
-                let chipLength = game.players[game.playerTurn].chips[chipsOnPos[0]].distance;
-
-                for (let i = 0; i < chipsToMove; i++) {
-
-                    if (chipLength === game.players[game.playerTurn].chips[chipsOnPos[i]].distance) {
-
-                        if (pos < 16) {
-
-                            game.players[game.playerTurn].chips[chipsOnPos[i]].pos = 16 + 13 * game.playerTurn;
-                            game.players[game.playerTurn].chips[chipsOnPos[i]].distance = 1;
-                            knockoutOn(game, 16 + 13 * game.playerTurn);
-
-                        } else {
-
-                            let newPos = game.players[game.playerTurn].chips[chipsOnPos[i]].pos + game.lastDice;
-                            let newDistance = game.players[game.playerTurn].chips[chipsOnPos[i]].distance + game.lastDice
-                            game.players[game.playerTurn].stats.totalDistance += game.lastDice;
-                            game.players[game.playerTurn].stats.sumDistance += game.lastDice;
-
-                            if (newPos > 67 && newPos < 74) {
-                                newPos += -52;
-                            }
-
-                            if (newDistance > 53) {
-                                newPos = 14 + game.playerTurn * 6 + newDistance;
-                            }
-
-                            if (newDistance === 59) {
-                                game.players[game.playerTurn].chips[chipsOnPos[i]].inAtTurn = game.turn;
-
-                            }
-
-                            game.players[game.playerTurn].chips[chipsOnPos[i]].distance = newDistance;
-                            game.players[game.playerTurn].chips[chipsOnPos[i]].pos = newPos;
-                            knockoutOn(game, newPos);
-
-                            checkWin(game);
-                        }
-
-                    }
-
-                    game.lastMoveTime = new Date();
-
-                    game.waitingForMove = false;
-                    game.posiblePos.length = 0;
-
-                    returnValue = 1;
-                }
-
-                if (game.lastDice !== 6) {
-                    nextPlayer(game);
-                }
-            }
-
-
-        } else if (pos === 92) {
-            updatePossible(game);
-
-            let allOnStart = true;
-            for (let i = 0; i < 4; i++) if (game.players[game.playerTurn].chips[i].distance > 0 && game.players[game.playerTurn].chips[i].distance !== 59) allOnStart = false;
-
-            game.throwsLeft--;
-
-            if (game.nextDice === 6) {
-
-                game.throwsLeft = 1;
-                game.currentCombo++;
-
-                if (game.currentCombo > game.players[game.playerTurn].stats.highestCombo) game.players[game.playerTurn].stats.highestCombo = game.currentCombo;
-                if (game.posiblePos.length !== 0) game.waitingForMove = true;
-
-            } else if (allOnStart && game.throwsLeft <= 0 && game.posiblePos.length === 0) {
-
-                nextPlayer(game)
-
-            } else if (!allOnStart) {
-
-                if (game.posiblePos.length === 0) nextPlayer(game);
-                else game.waitingForMove = true;
-
-            }
-
-            game.lastDice = game.nextDice;
-            game.nextDice = dice();
-
-            returnValue = 1;
-        }
-
-        checkWin(game);
-
-        game.isProcessing = false;
-
-        if (game.status === 2) returnValue = 2;
-
-        return returnValue;
+    gameLogic: function(game, playerId, pos, chipsToMove, moveChipsIn) {
+        return gameLogic(game, playerId, pos, chipsToMove, moveChipsIn);
     },
 
     createGame: function (players, gameSettings) {
@@ -164,6 +45,7 @@ module.exports = {
             game.players[i].status = 0;
             game.players[i].turnsIdle = 0;
             game.players[i].turnsIdleTotal = 0;
+            game.players[i].isBot = player.isBot;
             for (let j = 0; j < 4; j++) {
                 game.players[i].chips[j] = {};
                 game.players[i].chips[j].pos = j + i * 4;
@@ -182,6 +64,8 @@ module.exports = {
         setIdleTimeout(game);
 
         gameIdIncrement++;
+
+        if (game.players[game.playerTurn].isBot) ludoAI(game);
 
         return game;
     },
@@ -204,6 +88,129 @@ var io, playerAuth;
 var gameIdIncrement = 0;
 
 var gameTimeout = [];
+
+function gameLogic(game, playerId, pos, chipsToMove, moveChipsIn) {
+
+    if (game.status !== 1 || game.isProcessing || game.players[game.playerTurn].playerId !== playerId) return false;
+
+    let returnValue = 0;
+
+    game.isProcessing = true;
+
+    resetIdleTimeout(game);
+
+    if (game.waitingForMove) {
+
+        let chipsOnPos = [];
+
+        for (let i = 0; i < 4; i++) {
+            if (game.players[game.playerTurn].chips[i].pos === pos && (
+                moveChipsIn === undefined ||
+                (moveChipsIn && game.players[game.playerTurn].chips[i].distance === 53) ||
+                (moveChipsIn === false && game.players[game.playerTurn].chips[i].distance !== 53))
+            ) {
+                chipsOnPos.push(i);
+            }
+        }
+
+        if (chipsOnPos.length > 0) {
+
+            let chipLength = game.players[game.playerTurn].chips[chipsOnPos[0]].distance;
+
+            for (let i = 0; i < chipsToMove; i++) {
+
+                if (chipLength === game.players[game.playerTurn].chips[chipsOnPos[i]].distance) {
+
+                    if (pos < 16) {
+
+                        game.players[game.playerTurn].chips[chipsOnPos[i]].pos = 16 + 13 * game.playerTurn;
+                        game.players[game.playerTurn].chips[chipsOnPos[i]].distance = 1;
+                        knockoutOn(game, 16 + 13 * game.playerTurn);
+
+                    } else {
+
+                        let newPos = game.players[game.playerTurn].chips[chipsOnPos[i]].pos + game.lastDice;
+                        let newDistance = game.players[game.playerTurn].chips[chipsOnPos[i]].distance + game.lastDice
+                        game.players[game.playerTurn].stats.totalDistance += game.lastDice;
+                        game.players[game.playerTurn].stats.sumDistance += game.lastDice;
+
+                        if (newPos > 67 && newPos < 74) {
+                            newPos += -52;
+                        }
+
+                        if (newDistance > 53) {
+                            newPos = 14 + game.playerTurn * 6 + newDistance;
+                        }
+
+                        if (newDistance === 59) {
+                            game.players[game.playerTurn].chips[chipsOnPos[i]].inAtTurn = game.turn;
+
+                        }
+
+                        game.players[game.playerTurn].chips[chipsOnPos[i]].distance = newDistance;
+                        game.players[game.playerTurn].chips[chipsOnPos[i]].pos = newPos;
+                        knockoutOn(game, newPos);
+
+                        checkWin(game);
+                    }
+
+                }
+
+                game.lastMoveTime = new Date();
+
+                game.waitingForMove = false;
+                game.posiblePos.length = 0;
+
+                returnValue = 1;
+            }
+
+            if (game.lastDice !== 6) {
+                nextPlayer(game);
+            }
+        }
+
+
+    } else if (pos === 92) {
+        updatePossible(game);
+
+        let allOnStart = true;
+        for (let i = 0; i < 4; i++) if (game.players[game.playerTurn].chips[i].distance > 0 && game.players[game.playerTurn].chips[i].distance !== 59) allOnStart = false;
+
+        game.throwsLeft--;
+
+        if (game.nextDice === 6) {
+
+            game.throwsLeft = 1;
+            game.currentCombo++;
+
+            if (game.currentCombo > game.players[game.playerTurn].stats.highestCombo) game.players[game.playerTurn].stats.highestCombo = game.currentCombo;
+            if (game.posiblePos.length !== 0) game.waitingForMove = true;
+
+        } else if (allOnStart && game.throwsLeft <= 0 && game.posiblePos.length === 0) {
+
+            nextPlayer(game)
+
+        } else if (!allOnStart) {
+
+            if (game.posiblePos.length === 0) nextPlayer(game);
+            else game.waitingForMove = true;
+
+        }
+
+        game.lastDice = game.nextDice;
+        game.nextDice = dice();
+
+        returnValue = 1;
+    }
+
+    checkWin(game);
+
+    game.isProcessing = false;
+
+    if (game.status === 2) returnValue = 2;
+
+    return returnValue;
+}
 
 function addChatMessage(game, player, text, color="#ffffff", visibleFor=null) {
     game.chatMessages.push({player: player, time: new Date(), text: text, color: color, visibleFor: visibleFor});
@@ -397,6 +404,8 @@ function nextPlayer(game) {
 
         if (notStartedChips + chipsFinished === 4) game.throwsLeft = 3;
 
+        if (game.players[game.playerTurn].isBot) ludoAI(game);
+
     } else {
         nextPlayer(game);
     }
@@ -443,4 +452,35 @@ function updatePossible(game) {
             }
         }
     }
+}
+
+function ludoAI(game) {
+    setTimeout(function () {
+        if (game.players[game.playerTurn].isBot) {
+            if (game.waitingForMove && game.posiblePos.length > 0) {
+                let moved = false;
+                if (game.lastDice === 6) {
+                    for (let j = 0; j < 4; j++) {
+                        if (game.players[game.playerTurn].chips[j].distance === 0) {
+                            gameLogic(game, game.players[game.playerTurn].playerId, game.players[game.playerTurn].chips[j].pos, 1);
+                            io.emit("update", "" + game.gameId);
+                            ludoAI(game);
+                            moved = true;
+                            break;
+                        }
+                    }
+                }
+                if (!moved) {
+                    gameLogic(game, game.players[game.playerTurn].playerId, game.posiblePos[0], 1);
+                    io.emit("update", "" + game.gameId);
+                    ludoAI(game);
+                }
+            }
+            else {
+                gameLogic(game, game.players[game.playerTurn].playerId, 92, 1);
+                io.emit("update", "" + game.gameId);
+                ludoAI(game);
+            }
+        }
+    }, 500);
 }

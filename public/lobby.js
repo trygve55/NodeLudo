@@ -47,7 +47,7 @@ function updateLobby() {
                     readyPlayers++;
                     if (resultData.players[i].playerId == localStorage.playerId) {
                         inQueue = 0;
-                        updateReadyButton();
+                        updateButtons();
                     }
                 }
                 let playerDiv = jQuery('<div/>', {
@@ -60,7 +60,8 @@ function updateLobby() {
                         + '.png" alt="Country ' + resultData.players[i].country + '" height="22" width="auto" align="right">';
                 }
 
-                playerDiv.appendTo($((resultData.players[i].ready) ? "#readyPlayers" : "#players"));
+                if (!(resultData.players[i].isBot && !resultData.players[i].ready))
+                    playerDiv.appendTo($((resultData.players[i].ready) ? "#readyPlayers" : "#players"));
             }
 
             if (readyPlayers >= 2) {
@@ -140,7 +141,7 @@ function readyUnready() {
             timeout: 2000,
             success: function () {
                 inQueue = 0;
-                updateReadyButton();
+                updateButtons();
             }
         });
     } else {
@@ -152,23 +153,48 @@ function readyUnready() {
             timeout: 2000,
             success: function () {
                 inQueue = -1;
-                updateReadyButton();
+                updateButtons();
             }
         });
     }
 }
 
-function updateReadyButton() {
+function updateButtons() {
     if (inQueue === -1) {
         $("#readyBtn").text(" Ready ");
+        $("#addBotBtn").prop("disabled", true).css('opacity', 0.5);
+        $("#removeBotBtn").prop("disabled", true).css('opacity', 0.5);
+
     } else {
         $("#readyBtn").text("Unready");
+        $("#addBotBtn").prop("disabled", false).css('opacity', 1);
+        $("#removeBotBtn").prop("disabled", false).css('opacity', 1);
     }
 }
 
 function logout() {
     localStorage.token = undefined;
     window.location.href = baseUrl;
+}
+
+function addBot() {
+    jQuery.ajax({
+        url: baseUrl + "rest/lobby?token=" + localStorage.token,
+        type: "POST",
+        data: JSON.stringify({action: "addBot"}),
+        contentType: 'application/json; charset=utf-8',
+        timeout: 2000
+    });
+}
+
+function removeBot() {
+    jQuery.ajax({
+        url: baseUrl + "rest/lobby?token=" + localStorage.token,
+        type: "POST",
+        data: JSON.stringify({action: "removeBot"}),
+        contentType: 'application/json; charset=utf-8',
+        timeout: 2000
+    });
 }
 
 $(document).ready(function () {
@@ -192,10 +218,20 @@ $(document).ready(function () {
         logout();
     });
 
+    $("#addBotBtn").click(function () {
+        addBot();
+    });
+
+    $("#removeBotBtn").click(function () {
+        removeBot();
+    });
+
     $('#patch-notes').popover({
         container: 'body',
         html: true
     });
+
+    updateButtons();
 
     sendActiveSignal();
     setInterval(function () {

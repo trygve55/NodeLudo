@@ -1,7 +1,6 @@
 module.exports = {
-
-    addPlayer: function (playerName, country) {
-        return addPlayer(playerName, country);
+    addPlayer: function (playerName, country, isBot=false) {
+        return addPlayer(playerName, country, isBot);
     },
     playerExists: function (playerName) {
         return playerExists(playerName);
@@ -28,13 +27,13 @@ module.exports = {
         return getPlayerById(playerName);
     },
     setIngame: function (playerId, ingame) {
-        players[playerId].ingame = ingame;
+        if (!players[playerId].isBot) players[playerId].ingame = ingame;
     },
     setReady: function (playerId, ready) {
         players[playerId].ready = ready;
     },
     setInLobby: function (playerId, inLobby) {
-        players[playerId].inLobby = inLobby;
+        if (!players[playerId].isBot) players[playerId].inLobby = inLobby;
     },
     setSpectating: function (playerId, spectating) {
         players[playerId].spectating = spectating;
@@ -53,6 +52,9 @@ module.exports = {
     },
     playerListToString: function (players) {
         return playerListToString(players);
+    },
+    getBotPlayers: function () {
+        return getBotPlayers();
     }
 };
 
@@ -71,7 +73,7 @@ setInterval(function () {
     if (updateLobbyCallback) {
         let changes = false;
         for (let i = 0; i < players.length; i++) {
-            if (players[i].inLobby && new Date() - players[i].lastActiveLobby > config.lobbyTimeout) {
+            if (players[i].inLobby && !players[i].isBot && new Date() - players[i].lastActiveLobby > config.lobbyTimeout) {
                 players[i].inLobby = false;
                 players[i].ready = false;
                 changes = true;
@@ -121,7 +123,7 @@ function playerExists(playerName) {
     return false;
 }
 
-function addPlayer(playerName, country) {
+function addPlayer(playerName, country, isBot) {
     const payload = {
         playerName: playerName,
         playerId: playersIncrement
@@ -135,7 +137,8 @@ function addPlayer(playerName, country) {
         spectating: false,
         inLobby: true,
         lastActiveLobby: new Date(),
-        country: country
+        country: country,
+        isBot: isBot
     });
     playersIncrement++;
 
@@ -161,6 +164,14 @@ function getLobbyPlayers() {
         if (players[i].inLobby) lobbyPlayers[lobbyPlayers.length] = players[i];
     }
     return lobbyPlayers;
+}
+
+function getBotPlayers() {
+    let botPlayers = [];
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].isBot) botPlayers[botPlayers.length] = players[i];
+    }
+    return botPlayers;
 }
 
 function getReadyPlayers() {

@@ -1,7 +1,7 @@
 var isPlayer = 0;
 
 var game = null,
-    socket = io(window.location.host, {path: baseUrl + 'socket.io'});;
+    socket = io(window.location.host, {path: baseUrl + 'socket.io'});
 
 var drawedAt = [], 
     prevPossible = [],
