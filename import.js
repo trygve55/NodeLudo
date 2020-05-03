@@ -212,7 +212,7 @@ function gameLogic(game, playerId, pos, chipsToMove, moveChipsIn) {
     return returnValue;
 }
 
-function addChatMessage(game, player, text, color="#ffffff", visibleFor=null) {
+function addChatMessage(game, player, text, color="#000000", visibleFor=null) {
     game.chatMessages.push({player: player, time: new Date(), text: text, color: color, visibleFor: visibleFor});
     //io.emit("update", "" + game.gameId);
 }
