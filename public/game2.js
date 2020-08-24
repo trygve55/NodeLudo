@@ -263,18 +263,17 @@ function draw() {
 }
 
 function drawMultiStackUpdate() {	
-	for (var i = 0; i < 4; i++) {
+	for (let i = 0; i < 4; i++) {
 		
-		var playersOnPos = 0, players = [];
-		for (var j = 0; j < game.players.length; j++){
-			if (game.players[i] && chipsOnColor[j][i]) {
+		let playersOnPos = 0, players = [];
+		for (let j = 0; j < 4; j++){
+			if (game.players[j] != null && chipsOnColor[j][i] !== 0) {
 				playersOnPos++;
 				players.push(j);
 			}
 		}
 		
 		if (playersOnPos > 0 && !$("#pos-"+ (16 + 13 * i)).has("div").length) {
-	
 			$("#pos-"+ (16 + 13 * i)).html(getChipSVG(
 					chipsOnColor[players[multipleStackDrawCounter % playersOnPos]][i], 
 					chipColors[players[multipleStackDrawCounter % playersOnPos]]));
