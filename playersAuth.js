@@ -38,7 +38,7 @@ module.exports = {
     setSpectating: function (playerId, spectating) {
         players[playerId].spectating = spectating;
     },
-    setLobbyCallback: function (cb) {
+    setLobbyUpdateCallback: function (cb) {
         updateLobbyCallback = cb;
     },
     playerActive: function (playerId) {
@@ -69,6 +69,7 @@ var playerToken = [];
 var updateLobbyCallback;
 var chatMessagesRecentNum = [];
 
+//Interval set to check for inactive players in the lobby and remove them.
 setInterval(function () {
     if (updateLobbyCallback) {
         let changes = false;
@@ -77,15 +78,21 @@ setInterval(function () {
                 players[i].inLobby = false;
                 players[i].ready = false;
                 changes = true;
-                logger.info("player: " + players[i].playerName + " is inactive in lobby.");
+                logger.info("Player: " + players[i].playerName + " is inactive in lobby.");
             }
         }
         if (changes) updateLobbyCallback(players);
     }
 }, config.lobbyTimeoutCheckInterval);
 
+/**
+ * Validates the JWT in the request and decodes the information in the JWT.
+ * @param req
+ * @param res
+ * @param next
+ */
 function auth(req, res, next) {
-    var token = req.body.token || req.query.token;
+    let token = req.body.token || req.query.token;
 
     if (token) {
         jwt.verify(token, config.secret, function (err, decoded) {
@@ -104,10 +111,13 @@ function auth(req, res, next) {
         res.status(200).send({
             redirect: config.baseUrl
         });
-
     }
 }
 
+/**
+ * Sets a player as active in the lobby
+ * @param playerId
+ */
 function playerActive(playerId) {
     players[playerId].lastActiveLobby = new Date();
     if (players[playerId].inLobby) return;
@@ -116,6 +126,11 @@ function playerActive(playerId) {
     updateLobbyCallback(players);
 }
 
+/**
+ * Returns whether an username is in use.
+ * @param playerName
+ * @returns {boolean}
+ */
 function playerExists(playerName) {
     for (let i = 0; i < players.length; i++) {
         if (players[i].playerName === playerName) return true;
@@ -123,6 +138,13 @@ function playerExists(playerName) {
     return false;
 }
 
+/**
+ * registers a new player on the server
+ * @param playerName
+ * @param country - What country the user is from.
+ * @param isBot - If athe added player is a bot.
+ * @returns {*}
+ */
 function addPlayer(playerName, country, isBot) {
     const payload = {
         playerName: playerName,
@@ -151,6 +173,10 @@ function addPlayer(playerName, country, isBot) {
     return token;
 }
 
+/**
+ * Sets player as active in the lobby.
+ * @param playerId
+ */
 function addPlayerToLobby(playerId) {
     if (players[playerId].inLobby) return;
     players[playerId].inLobby = true;
@@ -158,6 +184,10 @@ function addPlayerToLobby(playerId) {
     updateLobbyCallback(players);
 }
 
+/**
+ * Returns all players in the lobby
+ * @returns Array Players
+ */
 function getLobbyPlayers() {
     let lobbyPlayers = [];
     for (let i = 0; i < players.length; i++) {
@@ -166,6 +196,10 @@ function getLobbyPlayers() {
     return lobbyPlayers;
 }
 
+/**
+ * Returns all bot players on the server
+ * @returns Array Players
+ */
 function getBotPlayers() {
     let botPlayers = [];
     for (let i = 0; i < players.length; i++) {
@@ -174,6 +208,10 @@ function getBotPlayers() {
     return botPlayers;
 }
 
+/**
+ * Return players that have readied up for a game up in the lobby.
+ * @returns Array Players
+ */
 function getReadyPlayers() {
     let readyPlayers = [];
     for (let i = 0; i < players.length; i++) {
@@ -188,10 +226,20 @@ function authPlayer(req, res) {
     return (playerToken[playerId] === token);
 }
 
+/**
+ * Get id of player by player name
+ * @param playerName
+ * @returns number
+ */
 function getPlayerId(playerName) {
     for (let i = 0; i < players.length; i++) if (playerName === players[i].playerName) return players[i].playerId;
 }
 
+/**
+ * Get player by id.
+ * @param playerId
+ * @returns Player
+ */
 function getPlayerById(playerId) {
     return players[playerId];
 }
@@ -211,6 +259,11 @@ function playerListToString(players) {
     return output;
 }
 
+/**
+ * Limit how often a user can post messages in games.
+ * @param playerId
+ * @returns {boolean}
+ */
 function chatDOSCheck(playerId) {
     if (chatMessagesRecentNum[playerId] === undefined) chatMessagesRecentNum[playerId] = 0;
 
