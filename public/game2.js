@@ -421,9 +421,7 @@ $(document).ready(function() {
 
 		//Ugly fix for random error in resize
 		setTimeout(function () {
-            console.log($('.grid').width() +" " + $('.grid').height());
             if ($('.grid').width() !== $('.grid').height()) {
-                console.log("resize");
                 $( window ).trigger("resize");
             }
         }, 10);
