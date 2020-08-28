@@ -174,7 +174,10 @@ function draw() {
             let msg = $("<div/>").addClass("chatMessage");
             if (game.chatMessages[i].player)
             	$("<div/>").text(game.chatMessages[i].player.playerName + " : ").css('width', '60px').css('display', 'inline').appendTo(msg);
-            $("<div/>").text(game.chatMessages[i].text).css('display', 'inline').css('color', game.chatMessages[i].color).appendTo(msg);
+            let messageText = $("<div/>").text(game.chatMessages[i].text).css('display', 'inline');
+            if (game.chatMessages[i].color != null)
+				messageText.css('color', game.chatMessages[i].color);
+			messageText.appendTo(msg);
             $("#chatLog").append(msg);
         }
     }

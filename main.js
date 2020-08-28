@@ -263,7 +263,7 @@ router.post('/rest/game', function (req, res) {
         if (playerAuth.chatDOSCheck(req.decoded.playerId)) return res.status(422).send("Too many messages");
 
         logger.info("Player: " + playerAuth.getPlayerById(req.decoded.playerId).playerName + " sent message '" + req.body.chatmessage + "' in game " + req.query.gameid);
-        gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, "#ffffff");
+        gameJS.postChatMessage(games[req.query.gameid], playerAuth.getPlayerById(req.decoded.playerId), req.body.chatmessage, null);
 
         sendGameUpdate(games[req.query.gameid].gameId);
 
