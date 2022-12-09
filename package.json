@@ -15,7 +15,7 @@
 		"deep-extend": ">=0.5.1",
 		"diff": "^3.5.0",
 		"ejs": "^2.6.1",
-		"express": "^4.16.4",
+		"express": "^4.17.3",
 		"fast-json-patch": "^2.0.7",
 		"geoip-country": "^4.0.14",
 		"jquery": "^3.4.1",
